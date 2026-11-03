@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura Café | Café de Especialidad & Experiencia Minimalista</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Playfair Display & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        aura: {
+                            bg: '#FAF6F0',
+                            card: '#FFFFFF',
+                            pinkLight: '#FDF0ED',
+                            pinkSoft: '#F8E7E7',
+                            pinkMid: '#E8B4B8',
+                            pinkRose: '#D8838B',
+                            pinkDeep: '#B85B64',
+                            beigeLight: '#F7EFF1',
+                            beige: '#F3ECE1',
+                            beigeDark: '#E5D9CC',
+                            espresso: '#2D1E18',
+                            mocha: '#4A352F',
+                            sand: '#F7EFF1'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Playfair Display', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 30px -10px rgba(45, 30, 24, 0.07)',
+                        'pink-glow': '0 8px 25px -5px rgba(232, 180, 184, 0.4)',
+                        'modal': '0 20px 40px -15px rgba(45, 30, 24, 0.25)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #FAF6F0;
+            color: #2D1E18;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FAF6F0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #E8B4B8;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #D8838B;
+        }
+
+        /* Ambient Audio Equalizer Animation */
+        @keyframes soundWave {
+            0%, 100% { height: 4px; }
+            50% { height: 16px; }
+        }
+        .eq-bar-1 { animation: soundWave 1.2s ease-in-out infinite; }
+        .eq-bar-2 { animation: soundWave 0.8s ease-in-out infinite 0.2s; }
+        .eq-bar-3 { animation: soundWave 1.0s ease-in-out infinite 0.4s; }
+
+        /* Custom UI Transitions */
+        .aura-card {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .aura-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Toast Animation */
+        @keyframes slideInUp {
+            from { transform: translateY(100%) scale(0.9); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        .toast-animate {
+            animation: slideInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-aura-pinkMid selection:text-aura-espresso">
+
+    <!-- Top Announcement Bar -->
+    <div class="bg-aura-pinkSoft text-aura-mocha text-xs font-medium py-2 px-4 text-center tracking-wide border-b border-aura-pinkMid/20">
+        ✨ Envíos gratis en compras superiores a $25.00 | Tostado fresco semanal de origen Huila y Antigua
+    </div>
+
+    <nav class="sticky top-0 z-40 bg-aura-bg/90 backdrop-blur-md border-b border-aura-beigeDark/40 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                
+                <!-- Logo -->
+                <a href="#" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 rounded-full bg-aura-pinkSoft flex items-center justify-center text-aura-pinkRose transition-transform group-hover:scale-110 shadow-sm border border-aura-pinkMid/30">
+                        <i class="fa-solid fa-mug-hot text-lg"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-serif text-2xl font-bold tracking-tight text-aura-espresso">Aura<span class="text-aura-pinkRose">.</span></span>
+                        <span class="text-[9px] tracking-[0.25em] text-aura-mocha uppercase font-semibold">Specialty Coffee</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Menu Navigation -->
+                <div class="hidden md:flex items-center gap-8 font-medium text-sm text-aura-mocha">
+                    <a href="#menu" class="hover:text-aura-pinkRose transition-colors py-1 relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-aura-pinkRose hover:after:w-full after:transition-all">Menú</a>
+                    <a href="#quiz" class="hover:text-aura-pinkRose transition-colors py-1 flex items-center gap-1.5 text-aura-pinkRose font-semibold bg-aura-pinkLight px-3 py-1 rounded-full border border-aura-pinkMid/30">
+                        <i class="fa-solid fa-wand-magic-sparkles text-xs"></i> Aura Matcher
+                    </a>
+                    <a href="#historia" class="hover:text-aura-pinkRose transition-colors py-1 relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-aura-pinkRose hover:after:w-full after:transition-all">Nuestra Historia</a>
+                    <a href="#ubicacion" class="hover:text-aura-pinkRose transition-colors py-1 relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-aura-pinkRose hover:after:w-full after:transition-all">Visítanos</a>
+                </div>
+
+                <!-- Right Action Icons -->
+                <div class="flex items-center gap-3">
+                    
+                    <!-- Ambient Sound Audio Button -->
+                    <button id="ambientToggleBtn" onclick="toggleAmbientAudio()" title="Sonido ambiente de cafetería" class="px-3.5 py-2 rounded-full bg-aura-card border border-aura-pinkMid/40 text-aura-mocha text-xs flex items-center gap-2 hover:bg-aura-pinkSoft transition-all shadow-sm">
+                        <i class="fa-solid fa-volume-xmark text-aura-pinkRose" id="soundIcon"></i>
+                        <span class="hidden sm:inline font-medium text-xs" id="soundLabel">Aura Lounge Audio</span>
+                        <div class="hidden items-end gap-[2px] h-3 ml-1" id="eqBars">
+                            <span class="w-[2px] bg-aura-pinkRose rounded-full eq-bar-1 opacity-80"></span>
+                            <span class="w-[2px] bg-aura-pinkRose rounded-full eq-bar-2 opacity-80"></span>
+                            <span class="w-[2px] bg-aura-pinkRose rounded-full eq-bar-3 opacity-80"></span>
+                        </div>
+                    </button>
+
+                    <!-- Cart Toggle Button -->
+                    <button id="openCartBtn" onclick="toggleCartDrawer(true)" class="relative p-2.5 rounded-full bg-aura-espresso text-aura-bg hover:bg-aura-mocha transition-colors shadow-soft flex items-center justify-center w-11 h-11">
+                        <i class="fa-solid fa-bag-shopping text-base"></i>
+                        <span id="cartBadge" class="absolute -top-1 -right-1 bg-aura-pinkRose text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-aura-bg transition-all transform scale-0">0</span>
+                    </button>
+
+                    <!-- Mobile Menu Button -->
+                    <button id="mobileMenuBtn" onclick="toggleMobileMenu()" class="md:hidden p-2 text-aura-espresso focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl" id="mobileMenuIcon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Drawer Navigation -->
+        <div id="mobileNav" class="hidden md:hidden bg-aura-bg border-b border-aura-beigeDark px-6 py-4 space-y-3">
+            <a href="#menu" class="block text-aura-espresso font-medium py-2 border-b border-aura-pinkSoft" onclick="toggleMobileMenu()">Menú de Especialidad</a>
+            <a href="#quiz" class="block text-aura-pinkRose font-semibold py-2 border-b border-aura-pinkSoft" onclick="toggleMobileMenu()">✨ Aura Matcher (Descubre tu café)</a>
+            <a href="#historia" class="block text-aura-espresso font-medium py-2 border-b border-aura-pinkSoft" onclick="toggleMobileMenu()">Nuestra Historia & Origen</a>
+            <a href="#ubicacion" class="block text-aura-espresso font-medium py-2" onclick="toggleMobileMenu()">Ubicación & Horarios</a>
+        </div>
+    </nav>
+
+    <header class="relative pt-8 pb-16 lg:pt-16 lg:pb-24 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <!-- Left Text Content -->
+                <div class="lg:col-span-7 space-y-6 text-center lg:text-left z-10">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-aura-pinkSoft text-aura-pinkRose text-xs font-semibold tracking-wider uppercase border border-aura-pinkMid/40">
+                        <span class="w-2 h-2 rounded-full bg-aura-pinkRose animate-pulse"></span>
+                        Barra de Especialidad & Repostería Artesanal
+                    </div>
+                    
+                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-aura-espresso leading-[1.15]">
+                        Calma, estética & <br class="hidden sm:inline">
+                        <span class="italic font-normal text-aura-pinkRose">el café perfecto</span> para tu día.
+                    </h1>
+                    
+                    <p class="text-aura-mocha/80 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 font-light leading-relaxed">
+                        En Aura Café seleccionamos micro-lotes de alta elevación con tueste artesanal. Cada taza es infusionada con precisión para regalarte un momento de pausa consciente.
+                    </p>
+
+                    <!-- Hero Actions -->
+                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+                        <a href="#menu" class="w-full sm:w-auto px-8 py-4 rounded-full bg-aura-espresso text-aura-bg font-semibold text-sm hover:bg-aura-pinkRose transition-all shadow-pink-glow text-center flex items-center justify-center gap-2 group">
+                            <span>Explorar Menú Digital</span>
+                            <i class="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
+                        </a>
+                        <a href="#quiz" class="w-full sm:w-auto px-8 py-4 rounded-full bg-white border border-aura-pinkMid/60 text-aura-mocha font-semibold text-sm hover:bg-aura-pinkSoft transition-colors text-center shadow-soft flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-sparkles text-aura-pinkRose"></i> ¿Qué tomar hoy? Quiz
+                        </a>
+                    </div>
+
+                    <!-- Trust Indicators -->
+                    <div class="pt-6 grid grid-cols-3 gap-4 border-t border-aura-beigeDark/60 max-w-lg mx-auto lg:mx-0 text-center lg:text-left">
+                        <div>
+                            <span class="block font-serif text-xl sm:text-2xl font-bold text-aura-espresso">88+ SCA</span>
+                            <span class="text-xs text-aura-mocha/70 font-medium">Puntaje de Cata</span>
+                        </div>
+                        <div>
+                            <span class="block font-serif text-xl sm:text-2xl font-bold text-aura-espresso">100%</span>
+                            <span class="text-xs text-aura-mocha/70 font-medium">Arábico Orgánico</span>
+                        </div>
+                        <div>
+                            <span class="block font-serif text-xl sm:text-2xl font-bold text-aura-espresso">4.9 ★</span>
+                            <span class="text-xs text-aura-mocha/70 font-medium">+2,500 Reseñas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Visual Hero Card / Image Collage -->
+                <div class="lg:col-span-5 relative flex justify-center">
+                    <!-- Background Aesthetic Blur Circles -->
+                    <div class="absolute -top-10 -right-10 w-64 h-64 bg-aura-pinkMid/30 rounded-full blur-3xl -z-10"></div>
+                    <div class="absolute -bottom-10 -left-10 w-64 h-64 bg-aura-beige/80 rounded-full blur-3xl -z-10"></div>
+
+                    <div class="relative w-full max-w-md bg-white/80 backdrop-blur-md rounded-3xl p-6 shadow-soft border border-aura-pinkMid/30">
+                        <div class="relative h-80 rounded-2xl overflow-hidden mb-5 bg-aura-beige">
+                            <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=800&auto=format&fit=crop" 
+                                 alt="Aura Specialty Iced Rose Latte" 
+                                 class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
+                                 onerror="this.src='https://placehold.co/600x800/E8B4B8/2D1E18?text=Aura+Rose+Latte'">
+                            
+                            <!-- Floating Tag Badge -->
+                            <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-aura-espresso shadow-sm flex items-center gap-1.5">
+                                <i class="fa-solid fa-star text-amber-400"></i> Favorito de la Casa
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="font-serif text-lg font-bold text-aura-espresso">Velvet Rose Iced Latte</h3>
+                                <p class="text-xs text-aura-mocha/70">Espresso dobles, leche de almendra, sirope de rosa silvestre & cardamomo.</p>
+                            </div>
+                            <button onclick="quickAddByTitle('Velvet Rose Iced Latte')" class="bg-aura-pinkSoft hover:bg-aura-pinkRose hover:text-white text-aura-pinkRose p-3 rounded-full transition-colors flex items-center justify-center w-10 h-10 shadow-sm shrink-0">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <section id="quiz" class="py-16 bg-aura-pinkSoft/40 border-y border-aura-pinkMid/20">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6">
+            
+            <div class="text-center max-w-xl mx-auto mb-10">
+                <span class="text-aura-pinkRose font-semibold text-xs tracking-widest uppercase flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-sparkles"></i> Test Interactivo
+                </span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-aura-espresso mt-2">Encuentra tu Aura Perfecta</h2>
+                <p class="text-xs sm:text-sm text-aura-mocha/80 mt-2">Responde 3 preguntas sencillas y nuestro barista inteligente te sugerirá la bebida ideal para este momento.</p>
+            </div>
+
+            <!-- Quiz Card Widget -->
+            <div class="bg-white rounded-3xl p-6 sm:p-10 shadow-soft border border-aura-pinkMid/30 relative overflow-hidden" id="quizContainer">
+                
+                <!-- Step Indicators -->
+                <div class="flex items-center justify-between mb-8 pb-4 border-b border-aura-pinkSoft">
+                    <span class="text-xs font-semibold text-aura-pinkRose uppercase tracking-wider" id="quizStepLabel">Paso 1 de 3</span>
+                    <div class="flex gap-2" id="quizProgressDots">
+                        <div class="w-8 h-2 rounded-full bg-aura-pinkRose transition-all" id="dot1"></div>
+                        <div class="w-3 h-2 rounded-full bg-aura-beigeDark transition-all" id="dot2"></div>
+                        <div class="w-3 h-2 rounded-full bg-aura-beigeDark transition-all" id="dot3"></div>
+                    </div>
+                </div>
+
+                <!-- Quiz Questions Content -->
+                <div id="quizQuestionBox">
+                    <!-- Dynamic Questions Injected via JS -->
+                </div>
+
+                <!-- Quiz Result Box (Hidden by default) -->
+                <div id="quizResultBox" class="hidden text-center space-y-6 py-4">
+                    <div class="w-16 h-16 bg-aura-pinkSoft rounded-full flex items-center justify-center text-aura-pinkRose text-2xl mx-auto">
+                        <i class="fa-solid fa-mug-hot"></i>
+                    </div>
+                    <div class="space-y-2">
+                        <span class="text-xs font-semibold uppercase tracking-widest text-aura-pinkRose">Tu Match Recomendado</span>
+                        <h3 class="font-serif text-2xl sm:text-3xl font-bold text-aura-espresso" id="recommendedDrinkTitle">Aura Vanilla Lavender Cold Brew</h3>
+                        <p class="text-sm text-aura-mocha/80 max-w-md mx-auto" id="recommendedDrinkDesc">Una infusión suave de 16 horas con matices florales de lavanda y toque aterciopelado de vainilla natural.</p>
+                    </div>
+                    <div class="pt-4 flex flex-col sm:flex-row justify-center gap-3">
+                        <button id="quizAddToCartBtn" class="px-8 py-3.5 rounded-full bg-aura-espresso text-white text-sm font-semibold hover:bg-aura-pinkRose transition-colors shadow-pink-glow">
+                            Añadir este pedido ($5.25)
+                        </button>
+                        <button onclick="resetQuiz()" class="px-6 py-3.5 rounded-full bg-aura-pinkSoft text-aura-mocha text-sm font-semibold hover:bg-aura-pinkMid/40 transition-colors">
+                            Reiniciar Quiz
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="menu" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Menu Header -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
+            <div>
+                <span class="text-aura-pinkRose font-semibold text-xs tracking-widest uppercase">Barra de Especialidad</span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-aura-espresso mt-1">Nuestro Menú</h2>
+                <p class="text-sm text-aura-mocha/80 mt-1">Bebidas preparadas por baristas certificados y repostería recién horneada.</p>
+            </div>
+
+            <!-- Search and Dietary Filters -->
+            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                <div class="relative flex-1 sm:w-64">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-aura-mocha/40 text-xs"></i>
+                    <input type="text" id="menuSearchInput" oninput="filterMenuItems()" placeholder="Buscar café, matcha, tarta..." class="w-full pl-9 pr-4 py-2.5 rounded-full bg-white border border-aura-pinkMid/40 text-xs focus:outline-none focus:border-aura-pinkRose transition-colors shadow-sm">
+                </div>
+                
+                <select id="dietaryFilter" onchange="filterMenuItems()" class="px-4 py-2.5 rounded-full bg-white border border-aura-pinkMid/40 text-xs text-aura-mocha font-medium focus:outline-none focus:border-aura-pinkRose shadow-sm">
+                    <option value="all">Todos los estilos</option>
+                    <option value="vegan">Opción Vegana 🌱</option>
+                    <option value="sugarfree">Sin Azúcar Añadido 🍯</option>
+                    <option value="iced">Bebidas Frías 🧊</option>
+                    <option value="hot">Bebidas Calientes ☕</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Category Tabs Navigation -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-4 mb-8 no-scrollbar" id="categoryTabs">
+            <button onclick="selectCategory('all')" class="cat-btn px-5 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap bg-aura-espresso text-white shadow-sm transition-all" data-cat="all">Todos</button>
+            <button onclick="selectCategory('coffee')" class="cat-btn px-5 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap bg-white text-aura-mocha border border-aura-pinkMid/40 hover:bg-aura-pinkSoft transition-all" data-cat="coffee">Espresso & Café</button>
+            <button onclick="selectCategory('coldbrew')" class="cat-btn px-5 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap bg-white text-aura-mocha border border-aura-pinkMid/40 hover:bg-aura-pinkSoft transition-all" data-cat="coldbrew">Cold Brew & Iced</button>
+            <button onclick="selectCategory('matcha')" class="cat-btn px-5 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap bg-white text-aura-mocha border border-aura-pinkMid/40 hover:bg-aura-pinkSoft transition-all" data-cat="matcha">Matcha & Tea</button>
+            <button onclick="selectCategory('bakery')" class="cat-btn px-5 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap bg-white text-aura-mocha border border-aura-pinkMid/40 hover:bg-aura-pinkSoft transition-all" data-cat="bakery">Repostería Artesanal</button>
+            <button onclick="selectCategory('beans')" class="cat-btn px-5 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap bg-white text-aura-mocha border border-aura-pinkMid/40 hover:bg-aura-pinkSoft transition-all" data-cat="beans">Bolsas de Café (250g)</button>
+        </div>
+
+        <!-- Menu Grid Container -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="menuGrid">
+            <!-- Dynamically populated via JS -->
+        </div>
+
+    </section>
+
+    <section id="historia" class="py-20 bg-aura-beigeLight border-y border-aura-beigeDark/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <div class="lg:col-span-6 relative">
+                    <div class="grid grid-cols-2 gap-4">
+                        <img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=600&auto=format&fit=crop" 
+                             alt="Granos de café de especialidad" 
+                             class="rounded-3xl h-64 w-full object-cover shadow-soft"
+                             onerror="this.src='https://placehold.co/600x600/E8B4B8/2D1E18?text=Origen+Granos'">
+                        <img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=600&auto=format&fit=crop" 
+                             alt="Proceso de filtrado de café" 
+                             class="rounded-3xl h-64 w-full object-cover shadow-soft mt-8"
+                             onerror="this.src='https://placehold.co/600x600/F3ECE1/2D1E18?text=Barista+Filtrado'">
+                    </div>
+                </div>
+
+                <div class="lg:col-span-6 space-y-6">
+                    <span class="text-aura-pinkRose font-semibold text-xs tracking-widest uppercase">Nuestra Filosofía</span>
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-aura-espresso leading-tight">
+                        De fincas sostenibles directamente a tu taza.
+                    </h2>
+                    <p class="text-aura-mocha/80 text-sm sm:text-base font-light leading-relaxed">
+                        En Aura Café creemos que el café es más que una dosis de energía: es un ritual de apreciación. Trabajamos directamente con pequeños productores de Huila (Colombia) y Antigua (Guatemala), garantizando un comercio justo e insumos de impacto positivo.
+                    </p>
+
+                    <div class="space-y-3 pt-2">
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-aura-pinkSoft flex items-center justify-center text-aura-pinkRose text-xs mt-0.5">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-xs uppercase tracking-wider text-aura-espresso">Tueste Medio Artesanal</h4>
+                                <p class="text-xs text-aura-mocha/70">Preservamos las notas frutales, caramelizadas y florales de cada origen.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-aura-pinkSoft flex items-center justify-center text-aura-pinkRose text-xs mt-0.5">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-xs uppercase tracking-wider text-aura-espresso">Leches Vegetales de Casa</h4>
+                                <p class="text-xs text-aura-mocha/70">Preparamos nuestras leches de avena y almendra diariamente sin aditivos.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="ubicacion" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-xl mx-auto mb-12">
+            <span class="text-aura-pinkRose font-semibold text-xs tracking-widest uppercase">Visítanos</span>
+            <h2 class="font-serif text-3xl sm:text-4xl font-bold text-aura-espresso mt-1">Nuestras Casas Aura</h2>
+            <p class="text-sm text-aura-mocha/80 mt-1">Espacios diseñados con luz natural, vegetación y la calma perfecta para trabajar o conversar.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <!-- Branch 1 Card -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-soft border border-aura-pinkMid/30 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <span class="inline-block bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-1 rounded-full mb-2">ABIERTO AHORA</span>
+                            <h3 class="font-serif text-xl font-bold text-aura-espresso">Aura - Casa Central</h3>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-aura-pinkSoft flex items-center justify-center text-aura-pinkRose">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                    </div>
+                    
+                    <p class="text-xs text-aura-mocha/80 mb-4">Av. Reforma 452, Col. Roma Norte</p>
+                    
+                    <div class="space-y-2 text-xs border-t border-b border-aura-pinkSoft py-4 my-4">
+                        <div class="flex justify-between">
+                            <span class="text-aura-mocha/70">Lunes a Viernes:</span>
+                            <span class="font-semibold text-aura-espresso">07:30 AM – 09:00 PM</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-aura-mocha/70">Sábados y Domingos:</span>
+                            <span class="font-semibold text-aura-espresso">08:00 AM – 10:00 PM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-2">
+                    <span class="text-xs text-aura-mocha/70"><i class="fa-solid fa-wifi text-aura-pinkRose mr-1"></i> Wi-Fi Alta Velocidad & Terrazas</span>
+                    <a href="https://maps.google.com" target="_blank" class="text-xs font-bold text-aura-pinkRose hover:underline flex items-center gap-1">
+                        Cómo llegar <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Branch 2 Card -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-soft border border-aura-pinkMid/30 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <span class="inline-block bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-1 rounded-full mb-2">ABIERTO AHORA</span>
+                            <h3 class="font-serif text-xl font-bold text-aura-espresso">Aura - Barra Condesa</h3>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-aura-pinkSoft flex items-center justify-center text-aura-pinkRose">
+                            <i class="fa-solid fa-store"></i>
+                        </div>
+                    </div>
+                    
+                    <p class="text-xs text-aura-mocha/80 mb-4">Calle Amsterdam 118, Hipódromo Condesa</p>
+                    
+                    <div class="space-y-2 text-xs border-t border-b border-aura-pinkSoft py-4 my-4">
+                        <div class="flex justify-between">
+                            <span class="text-aura-mocha/70">Lunes a Domingo:</span>
+                            <span class="font-semibold text-aura-espresso">08:00 AM – 08:30 PM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-2">
+                    <span class="text-xs text-aura-mocha/70"><i class="fa-solid fa-paw text-aura-pinkRose mr-1"></i> Pet Friendly & Grab & Go</span>
+                    <a href="https://maps.google.com" target="_blank" class="text-xs font-bold text-aura-pinkRose hover:underline flex items-center gap-1">
+                        Cómo llegar <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="bg-aura-espresso text-aura-bg pt-16 pb-12 border-t border-aura-mocha">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-aura-mocha/50">
+                
+                <!-- Brand Info -->
+                <div class="md:col-span-5 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-aura-pinkRose flex items-center justify-center text-white">
+                            <i class="fa-solid fa-mug-hot text-sm"></i>
+                        </div>
+                        <span class="font-serif text-2xl font-bold text-white">Aura<span class="text-aura-pinkMid">.</span></span>
+                    </div>
+                    <p class="text-xs text-aura-beige/70 leading-relaxed max-w-sm">
+                        Café de especialidad, barra de diseño y repostería artesanal para pausar el ritmo diario y disfrutar la magia de lo simple.
+                    </p>
+                    <div class="flex gap-4 text-aura-pinkMid pt-2">
+                        <a href="#" class="w-8 h-8 rounded-full bg-aura-mocha flex items-center justify-center hover:bg-aura-pinkRose hover:text-white transition-colors"><i class="fa-brands fa-instagram text-sm"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-aura-mocha flex items-center justify-center hover:bg-aura-pinkRose hover:text-white transition-colors"><i class="fa-brands fa-tiktok text-sm"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-aura-mocha flex items-center justify-center hover:bg-aura-pinkRose hover:text-white transition-colors"><i class="fa-brands fa-whatsapp text-sm"></i></a>
+                    </div>
+                </div>
+
+                <!-- Navigation Quick Links -->
+                <div class="md:col-span-3 space-y-3">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-aura-pinkMid">Explorar</h4>
+                    <ul class="space-y-2 text-xs text-aura-beige/80">
+                        <li><a href="#menu" class="hover:text-aura-pinkMid transition-colors">Menú de Especialidad</a></li>
+                        <li><a href="#quiz" class="hover:text-aura-pinkMid transition-colors">Aura Matcher Quiz</a></li>
+                        <li><a href="#historia" class="hover:text-aura-pinkMid transition-colors">Origen de los Granos</a></li>
+                        <li><a href="#ubicacion" class="hover:text-aura-pinkMid transition-colors">Nuestras Sucursales</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter Join -->
+                <div class="md:col-span-4 space-y-3">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-aura-pinkMid">Club Aura</h4>
+                    <p class="text-xs text-aura-beige/70">Suscríbete para recibir invitaciones a catas exclusivas y un 15% de descuento en tu primera bolsa de café.</p>
+                    <form onsubmit="handleNewsletter(event)" class="flex gap-2 pt-1">
+                        <input type="email" required placeholder="Tu correo electrónico..." class="px-4 py-2.5 rounded-full bg-aura-mocha text-white text-xs placeholder:text-aura-beige/40 border border-aura-mocha focus:outline-none focus:border-aura-pinkMid flex-1">
+                        <button type="submit" class="px-5 py-2.5 rounded-full bg-aura-pinkRose text-white font-semibold text-xs hover:bg-aura-pinkMid transition-colors">Unirme</button>
+                    </form>
+                </div>
+
+            </div>
+
+            <!-- Bottom Copyright -->
+            <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-[11px] text-aura-beige/50">
+                <p>© 2026 Aura Café. Todos los derechos reservados.</p>
+                <div class="flex gap-4 mt-4 sm:mt-0">
+                    <a href="#" class="hover:underline">Aviso de Privacidad</a>
+                    <a href="#" class="hover:underline">Términos de Servicio</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="customizeModal" class="fixed inset-0 bg-aura-espresso/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden transition-opacity">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-modal border border-aura-pinkMid/40 relative max-h-[90vh] overflow-y-auto">
+            
+            <button onclick="closeCustomizeModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-aura-pinkSoft text-aura-mocha flex items-center justify-center hover:bg-aura-pinkMid transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex gap-4 items-center mb-6 pb-4 border-b border-aura-pinkSoft">
+                <img id="modalImg" src="" alt="" class="w-16 h-16 rounded-2xl object-cover bg-aura-beige shrink-0">
+                <div>
+                    <span id="modalCategory" class="text-[10px] font-bold text-aura-pinkRose uppercase tracking-wider">Categoría</span>
+                    <h3 id="modalTitle" class="font-serif text-xl font-bold text-aura-espresso">Nombre del Producto</h3>
+                    <span id="modalBasePrice" class="text-sm font-semibold text-aura-mocha">$0.00</span>
+                </div>
+            </div>
+
+            <form id="customizeForm" onsubmit="confirmAddToCart(event)" class="space-y-5">
+                
+                <!-- Size Options -->
+                <div id="sizeSection">
+                    <label class="block text-xs font-bold text-aura-espresso uppercase tracking-wider mb-2">Tamaño</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label class="border border-aura-pinkMid/40 rounded-2xl p-2.5 text-center cursor-pointer hover:bg-aura-pinkSoft transition-colors flex flex-col items-center">
+                            <input type="radio" name="size" value="Chico (12oz)" class="sr-only" checked onchange="updateModalPrice()">
+                            <span class="text-xs font-bold text-aura-espresso">Chico</span>
+                            <span class="text-[10px] text-aura-mocha/60">12 oz</span>
+                        </label>
+                        <label class="border border-aura-pinkMid/40 rounded-2xl p-2.5 text-center cursor-pointer hover:bg-aura-pinkSoft transition-colors flex flex-col items-center">
+                            <input type="radio" name="size" value="Mediano (16oz)" class="sr-only" onchange="updateModalPrice()">
+                            <span class="text-xs font-bold text-aura-espresso">Mediano</span>
+                            <span class="text-[10px] text-aura-mocha/60">16 oz (+$0.75)</span>
+                        </label>
+                        <label class="border border-aura-pinkMid/40 rounded-2xl p-2.5 text-center cursor-pointer hover:bg-aura-pinkSoft transition-colors flex flex-col items-center">
+                            <input type="radio" name="size" value="Grande (20oz)" class="sr-only" onchange="updateModalPrice()">
+                            <span class="text-xs font-bold text-aura-espresso">Grande</span>
+                            <span class="text-[10px] text-aura-mocha/60">20 oz (+$1.25)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Milk Option -->
+                <div id="milkSection">
+                    <label class="block text-xs font-bold text-aura-espresso uppercase tracking-wider mb-2">Tipo de Leche</label>
+                    <select id="milkSelect" class="w-full px-4 py-2.5 rounded-2xl bg-aura-pinkSoft/50 border border-aura-pinkMid/40 text-xs font-medium text-aura-espresso focus:outline-none">
+                        <option value="Leche Entera Cremosa">Leche Entera Orgánica</option>
+                        <option value="Leche Deslactosada">Leche Deslactosada Light</option>
+                        <option value="Leche de Avena de Casa (🌱 Vegana)">Leche de Avena Artesanal (🌱 Vegana)</option>
+                        <option value="Leche de Almendra (🌱 Vegana)">Leche de Almendra (🌱 Vegana)</option>
+                    </select>
+                </div>
+
+                <!-- Sweetness Level -->
+                <div id="sweetnessSection">
+                    <label class="block text-xs font-bold text-aura-espresso uppercase tracking-wider mb-2">Nivel de Dulzor</label>
+                    <select id="sweetnessSelect" class="w-full px-4 py-2.5 rounded-2xl bg-aura-pinkSoft/50 border border-aura-pinkMid/40 text-xs font-medium text-aura-espresso focus:outline-none">
+                        <option value="Dulzor Estándar (100%)">Dulzor Estándar (100%)</option>
+                        <option value="Ligeramente Dulce (50%)">Ligeramente Dulce (50%)</option>
+                        <option value="Sin Azúcar / Natural (0%)">Sin Azúcar Añadida (0%)</option>
+                    </select>
+                </div>
+
+                <!-- Extra Notes -->
+                <div>
+                    <label class="block text-xs font-bold text-aura-espresso uppercase tracking-wider mb-2">Instrucciones Especiales</label>
+                    <input type="text" id="specialNotes" placeholder="Ej. Extra caliente, vaso para llevar..." class="w-full px-4 py-2.5 rounded-2xl bg-aura-pinkSoft/50 border border-aura-pinkMid/40 text-xs text-aura-espresso focus:outline-none">
+                </div>
+
+                <!-- Final Add Button -->
+                <div class="pt-4 flex items-center justify-between border-t border-aura-pinkSoft">
+                    <div>
+                        <span class="text-[10px] uppercase text-aura-mocha/60 font-semibold block">Total</span>
+                        <span id="modalCalculatedTotal" class="text-xl font-bold font-serif text-aura-espresso">$0.00</span>
+                    </div>
+                    <button type="submit" class="px-8 py-3.5 rounded-full bg-aura-espresso text-white text-xs font-semibold hover:bg-aura-pinkRose transition-colors shadow-pink-glow">
+                        Agregar al Carrito
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <div id="cartDrawer" class="fixed inset-0 bg-aura-espresso/50 backdrop-blur-sm z-50 transition-opacity hidden">
+        <div class="absolute inset-y-0 right-0 max-w-full flex pl-10">
+            <div class="w-screen max-w-md bg-aura-bg border-l border-aura-pinkMid/30 shadow-2xl flex flex-col justify-between">
+                
+                <!-- Drawer Header -->
+                <div class="p-6 bg-white border-b border-aura-pinkSoft flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-bag-shopping text-aura-pinkRose text-lg"></i>
+                        <h3 class="font-serif text-xl font-bold text-aura-espresso">Tu Pedido</h3>
+                    </div>
+                    <button onclick="toggleCartDrawer(false)" class="w-8 h-8 rounded-full bg-aura-pinkSoft text-aura-mocha flex items-center justify-center hover:bg-aura-pinkMid transition-colors">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Drawer Items List -->
+                <div class="flex-1 overflow-y-auto p-6 space-y-4" id="cartItemsContainer">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Drawer Footer Summary -->
+                <div class="p-6 bg-white border-t border-aura-pinkSoft space-y-4">
+                    
+                    <!-- Promo Code Input -->
+                    <div class="flex gap-2">
+                        <input type="text" id="promoInput" placeholder="Código de Descuento (ej. AURA10)" class="flex-1 px-4 py-2 bg-aura-pinkSoft/40 border border-aura-pinkMid/40 rounded-full text-xs focus:outline-none uppercase">
+                        <button onclick="applyPromoCode()" class="px-4 py-2 bg-aura-pinkSoft text-aura-pinkRose font-semibold text-xs rounded-full hover:bg-aura-pinkMid transition-colors">Aplicar</button>
+                    </div>
+
+                    <!-- Order Subtotals -->
+                    <div class="space-y-2 text-xs text-aura-mocha">
+                        <div class="flex justify-between">
+                            <span>Subtotal:</span>
+                            <span id="cartSubtotal">$0.00</span>
+                        </div>
+                        <div class="flex justify-between text-emerald-700 hidden" id="discountRow">
+                            <span>Descuento (AURA10):</span>
+                            <span id="cartDiscount">-$0.00</span>
+                        </div>
+                        <div class="flex justify-between font-bold text-base text-aura-espresso pt-2 border-t border-aura-pinkSoft">
+                            <span>Total Estimado:</span>
+                            <span id="cartTotal" class="font-serif">$0.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Checkout Action -->
+                    <button onclick="openCheckoutModal()" id="checkoutBtn" disabled class="w-full py-4 rounded-full bg-aura-espresso text-white font-semibold text-xs uppercase tracking-wider hover:bg-aura-pinkRose transition-colors shadow-pink-glow disabled:opacity-50 disabled:cursor-not-allowed">
+                        Finalizar Pedido
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="checkoutModal" class="fixed inset-0 bg-aura-espresso/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-modal border border-aura-pinkMid/40 relative">
+            <button onclick="closeCheckoutModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-aura-pinkSoft text-aura-mocha flex items-center justify-center hover:bg-aura-pinkMid transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 bg-aura-pinkSoft rounded-full flex items-center justify-center text-aura-pinkRose mx-auto mb-2 text-xl">
+                    <i class="fa-solid fa-heart"></i>
+                </div>
+                <h3 class="font-serif text-2xl font-bold text-aura-espresso">Confirmar Pedido</h3>
+                <p class="text-xs text-aura-mocha/70">Selecciona el tipo de entrega e ingresa tus datos.</p>
+            </div>
+
+            <form onsubmit="submitFinalOrder(event)" class="space-y-4">
+                
+                <!-- Service Type -->
+                <div class="grid grid-cols-2 gap-2">
+                    <label class="border border-aura-pinkMid/40 rounded-2xl p-2.5 text-center cursor-pointer hover:bg-aura-pinkSoft transition-colors">
+                        <input type="radio" name="orderType" value="Recoger en Barra" checked class="sr-only">
+                        <span class="text-xs font-bold text-aura-espresso block">🚶 Recoger en Barra</span>
+                        <span class="text-[10px] text-aura-mocha/60">Listo en 10 min</span>
+                    </label>
+                    <label class="border border-aura-pinkMid/40 rounded-2xl p-2.5 text-center cursor-pointer hover:bg-aura-pinkSoft transition-colors">
+                        <input type="radio" name="orderType" value="Para Mesa" class="sr-only">
+                        <span class="text-xs font-bold text-aura-espresso block">☕ En Mesa</span>
+                        <span class="text-[10px] text-aura-mocha/60">Ingresa tu Mesa</span>
+                    </label>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-aura-espresso uppercase tracking-wider mb-1">Nombre Completo</label>
+                    <input type="text" required id="customerName" placeholder="Tu nombre..." class="w-full px-4 py-2.5 rounded-xl bg-aura-pinkSoft/40 border border-aura-pinkMid/40 text-xs text-aura-espresso focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-aura-espresso uppercase tracking-wider mb-1">Sucursal / Mesa / Notas</label>
+                    <input type="text" required id="customerNotes" placeholder="Ej. Casa Central / Mesa #4" class="w-full px-4 py-2.5 rounded-xl bg-aura-pinkSoft/40 border border-aura-pinkMid/40 text-xs text-aura-espresso focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-aura-espresso uppercase tracking-wider mb-1">Método de Pago</label>
+                    <select id="paymentMethod" class="w-full px-4 py-2.5 rounded-xl bg-aura-pinkSoft/40 border border-aura-pinkMid/40 text-xs font-medium text-aura-espresso focus:outline-none">
+                        <option value="Tarjeta de Crédito / Débito">💳 Tarjeta de Crédito / Débito</option>
+                        <option value="Efectivo en Caja">💵 Efectivo en Caja</option>
+                        <option value="Apple Pay / Google Pay">📱 Apple Pay / Google Pay</option>
+                    </select>
+                </div>
+
+                <div class="pt-4 border-t border-aura-pinkSoft flex justify-between items-center">
+                    <div>
+                        <span class="text-[10px] uppercase text-aura-mocha/60 block">Monto a Pagar</span>
+                        <span id="checkoutModalTotal" class="text-lg font-bold font-serif text-aura-espresso">$0.00</span>
+                    </div>
+                    <button type="submit" class="px-8 py-3.5 rounded-full bg-aura-espresso text-white text-xs font-semibold hover:bg-aura-pinkRose transition-colors shadow-pink-glow">
+                        Confirmar y Enviar
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Toast Container -->
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-50 space-y-2 pointer-events-none"></div>
+
+    <script>
+        // Database of Specialty Menu Items
+        const menuProducts = [
+            {
+                id: 'p1',
+                title: 'Velvet Rose Iced Latte',
+                category: 'coldbrew',
+                price: 5.50,
+                dietary: ['iced'],
+                image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=600&auto=format&fit=crop',
+                description: 'Espresso doble con infusiones de rosa silvestre, cardamomo y leche de almendras fría.'
+            },
+            {
+                id: 'p2',
+                title: 'Aura Vanilla Lavender Cold Brew',
+                category: 'coldbrew',
+                price: 5.25,
+                dietary: ['iced', 'vegan'],
+                image: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?q=80&w=600&auto=format&fit=crop',
+                description: 'Cold brew macerado 16 hrs con flor de lavanda y suave espumado de vainilla natural.'
+            },
+            {
+                id: 'p3',
+                title: 'Flat White de la Casa',
+                category: 'coffee',
+                price: 4.50,
+                dietary: ['hot'],
+                image: 'https://images.unsplash.com/photo-1577968897966-3d4325b36b61?q=80&w=600&auto=format&fit=crop',
+                description: 'Doble shot de espresso de grano Huila con una microespuma aterciopelada y suave.'
+            },
+            {
+                id: 'p4',
+                title: 'Matcha Cloud Latte Ceremonial',
+                category: 'matcha',
+                price: 5.80,
+                dietary: ['iced', 'vegan', 'sugarfree'],
+                image: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?q=80&w=600&auto=format&fit=crop',
+                description: 'Matcha de grado ceremonial de Uji (Japón) batido a mano con leche de avena orgánica.'
+            },
+            {
+                id: 'p5',
+                title: 'Croissant de Almendras & Frambuesa',
+                category: 'bakery',
+                price: 4.25,
+                dietary: ['hot'],
+                image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=600&auto=format&fit=crop',
+                description: 'Hojaldre artesanal horneado diariamente con frangipane y mermelada orgánica.'
+            },
+            {
+                id: 'p6',
+                title: 'Café en Grano - Huila Finca La Aura (250g)',
+                category: 'beans',
+                price: 18.00,
+                dietary: ['vegan', 'sugarfree'],
+                image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?q=80&w=600&auto=format&fit=crop',
+                description: 'Notas de cata: Durazno, chocolate blanco y jazmín. Elevación 1,850m.'
+            },
+            {
+                id: 'p7',
+                title: 'Espresso Tonic de Frutos Rojos',
+                category: 'coldbrew',
+                price: 5.00,
+                dietary: ['iced', 'sugarfree'],
+                image: 'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?q=80&w=600&auto=format&fit=crop',
+                description: 'Espresso concentrado vertido sobre agua tónica de frutos del bosque y hielo artesanal.'
+            },
+            {
+                id: 'p8',
+                title: 'Tarta Cheesecaky de Cardamomo',
+                category: 'bakery',
+                price: 5.50,
+                dietary: ['sugarfree'],
+                image: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?q=80&w=600&auto=format&fit=crop',
+                description: 'Cheesecake de estilo vasco infusionado con semillas de cardamomo recién molidas.'
+            }
+        ];
+
+        // Quiz Question Database
+        const quizQuestions = [
+            {
+                question: '¿Qué tipo de energía buscas para este momento?',
+                options: [
+                    { text: '⚡ Un impulso concentrado de cafeína', drinkId: 'p3' },
+                    { text: '🌿 Una calma enfocado y sin sobresaltos', drinkId: 'p4' },
+                    { text: '🧊 Algo refrescante y ligero para relajarme', drinkId: 'p2' }
+                ]
+            },
+            {
+                question: '¿Qué perfil de sabor prefieres en tu taza?',
+                options: [
+                    { text: '🌸 Notas florales y toques dulces sutiles', drinkId: 'p1' },
+                    { text: '🍫 Sabores intensos a cacao tostado y frutos secos', drinkId: 'p3' },
+                    { text: '🍃 Herbáceo, limpio y cremoso', drinkId: 'p4' }
+                ]
+            },
+            {
+                question: '¿Prefieres tu bebida fría o caliente?',
+                options: [
+                    { text: '🧊 Fría / Iced con bastantes hielos', drinkId: 'p2' },
+                    { text: '☕ Caliente / Con textura cremosa', drinkId: 'p3' }
+                ]
+            }
+        ];
+
+        // State Management
+        let cart = [];
+        let activeCategory = 'all';
+        let currentQuizIndex = 0;
+        let quizAnswers = [];
+        let activeCustomizingProduct = null;
+        let appliedDiscount = 0;
+        let audioContext = null;
+        let ambientOscillator = null;
+        let isAudioPlaying = false;
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            renderMenu();
+            renderQuizStep();
+            updateCartBadge();
+        });
+
+        // Navigation Toggle
+        function toggleMobileMenu() {
+            const mobileNav = document.getElementById('mobileNav');
+            mobileNav.classList.toggle('hidden');
+        }
+
+        // Render Specialty Menu
+        function renderMenu() {
+            const grid = document.getElementById('menuGrid');
+            const searchVal = document.getElementById('menuSearchInput').value.toLowerCase();
+            const filterVal = document.getElementById('dietaryFilter').value;
+
+            const filtered = menuProducts.filter(item => {
+                const matchCategory = (activeCategory === 'all' || item.category === activeCategory);
+                const matchSearch = item.title.toLowerCase().includes(searchVal) || item.description.toLowerCase().includes(searchVal);
+                const matchDietary = (filterVal === 'all' || item.dietary.includes(filterVal));
+                return matchCategory && matchSearch && matchDietary;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12 text-aura-mocha/60">
+                        <i class="fa-solid fa-mug-saucer text-3xl mb-3 text-aura-pinkRose"></i>
+                        <p class="text-sm">No encontramos opciones que coincidan con tu búsqueda.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(item => `
+                <div class="bg-white rounded-3xl p-5 shadow-soft border border-aura-pinkMid/20 aura-card flex flex-col justify-between">
+                    <div>
+                        <div class="relative h-48 rounded-2xl overflow-hidden mb-4 bg-aura-beige">
+                            <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x400/E8B4B8/2D1E18?text=${encodeURIComponent(item.title)}'">
+                            <span class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-aura-espresso shadow-sm">$${item.price.toFixed(2)}</span>
+                        </div>
+                        <h3 class="font-serif text-lg font-bold text-aura-espresso leading-snug">${item.title}</h3>
+                        <p class="text-xs text-aura-mocha/70 mt-1.5 leading-relaxed line-clamp-2">${item.description}</p>
+                    </div>
+
+                    <div class="pt-4 mt-4 border-t border-aura-pinkSoft flex items-center justify-between">
+                        <button onclick="openCustomizeModal('${item.id}')" class="text-xs font-semibold text-aura-pinkRose hover:underline flex items-center gap-1">
+                            Personalizar <i class="fa-solid fa-sliders text-[10px]"></i>
+                        </button>
+                        <button onclick="quickAddToCart('${item.id}')" class="bg-aura-pinkSoft hover:bg-aura-pinkRose hover:text-white text-aura-pinkRose px-4 py-2 rounded-full text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-plus text-[10px]"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filter Handlers
+        function selectCategory(cat) {
+            activeCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                if(btn.dataset.cat === cat) {
+                    btn.className = "cat-btn px-5 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap bg-aura-espresso text-white shadow-sm transition-all";
+                } else {
+                    btn.className = "cat-btn px-5 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap bg-white text-aura-mocha border border-aura-pinkMid/40 hover:bg-aura-pinkSoft transition-all";
+                }
+            });
+            renderMenu();
+        }
+
+        function filterMenuItems() {
+            renderMenu();
+        }
+
+        // Customization Modal Logic
+        function openCustomizeModal(productId) {
+            const product = menuProducts.find(p => p.id === productId);
+            if (!product) return;
+
+            activeCustomizingProduct = product;
+            document.getElementById('modalImg').src = product.image;
+            document.getElementById('modalTitle').innerText = product.title;
+            document.getElementById('modalCategory').innerText = product.category.toUpperCase();
+            document.getElementById('modalBasePrice').innerText = `$${product.price.toFixed(2)}`;
+
+            // Toggle sections based on type
+            const isBeans = product.category === 'beans';
+            const isBakery = product.category === 'bakery';
+
+            document.getElementById('sizeSection').style.display = isBeans ? 'none' : 'block';
+            document.getElementById('milkSection').style.display = (isBeans || isBakery) ? 'none' : 'block';
+            document.getElementById('sweetnessSection').style.display = (isBeans || isBakery) ? 'none' : 'block';
+
+            updateModalPrice();
+            document.getElementById('customizeModal').classList.remove('hidden');
+        }
+
+        function closeCustomizeModal() {
+            document.getElementById('customizeModal').classList.add('hidden');
+        }
+
+        function updateModalPrice() {
+            if (!activeCustomizingProduct) return;
+            let price = activeCustomizingProduct.price;
+
+            const selectedSize = document.querySelector('input[name="size"]:checked');
+            if (selectedSize && activeCustomizingProduct.category !== 'beans') {
+                if (selectedSize.value.includes('Mediano')) price += 0.75;
+                if (selectedSize.value.includes('Grande')) price += 1.25;
+            }
+
+            document.getElementById('modalCalculatedTotal').innerText = `$${price.toFixed(2)}`;
+        }
+
+        function confirmAddToCart(event) {
+            event.preventDefault();
+            if (!activeCustomizingProduct) return;
+
+            let finalPrice = activeCustomizingProduct.price;
+            const selectedSize = document.querySelector('input[name="size"]:checked');
+            if (selectedSize && activeCustomizingProduct.category !== 'beans') {
+                if (selectedSize.value.includes('Mediano')) finalPrice += 0.75;
+                if (selectedSize.value.includes('Grande')) finalPrice += 1.25;
+            }
+
+            const isBeverage = activeCustomizingProduct.category !== 'beans' && activeCustomizingProduct.category !== 'bakery';
+
+            const cartItem = {
+                id: Date.now(),
+                title: activeCustomizingProduct.title,
+                price: finalPrice,
+                size: isBeverage ? selectedSize.value : 'Estándar',
+                milk: isBeverage ? document.getElementById('milkSelect').value : 'N/A',
+                sweetness: isBeverage ? document.getElementById('sweetnessSelect').value : 'N/A',
+                notes: document.getElementById('specialNotes').value,
+                quantity: 1,
+                image: activeCustomizingProduct.image
+            };
+
+            cart.push(cartItem);
+            updateCart();
+            closeCustomizeModal();
+            showToast(`¡${cartItem.title} agregado al pedido!`);
+        }
+
+        function quickAddToCart(productId) {
+            const product = menuProducts.find(p => p.id === productId);
+            if (!product) return;
+
+            const cartItem = {
+                id: Date.now(),
+                title: product.title,
+                price: product.price,
+                size: 'Mediano (16oz)',
+                milk: 'Leche Entera Orgánica',
+                sweetness: 'Estándar (100%)',
+                notes: '',
+                quantity: 1,
+                image: product.image
+            };
+
+            cart.push(cartItem);
+            updateCart();
+            showToast(`¡${product.title} agregado!`);
+        }
+
+        function quickAddByTitle(title) {
+            const product = menuProducts.find(p => p.title.toLowerCase().includes(title.toLowerCase()));
+            if (product) quickAddToCart(product.id);
+        }
+
+        // Cart Slide-over Logic
+        function toggleCartDrawer(open) {
+            const drawer = document.getElementById('cartDrawer');
+            if (open) {
+                drawer.classList.remove('hidden');
+            } else {
+                drawer.classList.add('hidden');
+            }
+        }
+
+        function updateCart() {
+            updateCartBadge();
+            renderCartItems();
+        }
+
+        function updateCartBadge() {
+            const badge = document.getElementById('cartBadge');
+            const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+            badge.innerText = totalQty;
+            if (totalQty > 0) {
+                badge.classList.remove('scale-0');
+                badge.classList.add('scale-100');
+            } else {
+                badge.classList.remove('scale-100');
+                badge.classList.add('scale-0');
+            }
+        }
+
+        function renderCartItems() {
+            const container = document.getElementById('cartItemsContainer');
+            const checkoutBtn = document.getElementById('checkoutBtn');
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-16 text-aura-mocha/60">
+                        <i class="fa-solid fa-mug-hot text-4xl mb-3 text-aura-pinkRose"></i>
+                        <p class="text-sm">Tu pedido está vacío.</p>
+                        <p class="text-xs mt-1 text-aura-mocha/40">Explora nuestro menú y añade tu bebida favorita.</p>
+                    </div>
+                `;
+                checkoutBtn.disabled = true;
+                calculateCartTotals(0);
+                return;
+            }
+
+            checkoutBtn.disabled = false;
+            let subtotal = 0;
+
+            container.innerHTML = cart.map((item, index) => {
+                subtotal += item.price * item.quantity;
+                return `
+                    <div class="bg-white p-4 rounded-2xl border border-aura-pinkMid/20 flex gap-3 items-center">
+                        <img src="${item.image}" class="w-14 h-14 rounded-xl object-cover bg-aura-beige shrink-0" onerror="this.src='https://placehold.co/100x100/E8B4B8/2D1E18?text=Aura'">
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-serif font-bold text-xs text-aura-espresso truncate">${item.title}</h4>
+                            <p class="text-[10px] text-aura-mocha/60 truncate">${item.size} • ${item.milk}</p>
+                            <span class="text-xs font-semibold text-aura-pinkRose">$${(item.price * item.quantity).toFixed(2)}</span>
+                        </div>
+                        
+                        <div class="flex items-center gap-2">
+                            <button onclick="changeQty(${index}, -1)" class="w-6 h-6 rounded-full bg-aura-pinkSoft text-aura-espresso text-xs font-bold flex items-center justify-center hover:bg-aura-pinkMid">-</button>
+                            <span class="text-xs font-bold text-aura-espresso w-4 text-center">${item.quantity}</span>
+                            <button onclick="changeQty(${index}, 1)" class="w-6 h-6 rounded-full bg-aura-pinkSoft text-aura-espresso text-xs font-bold flex items-center justify-center hover:bg-aura-pinkMid">+</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            calculateCartTotals(subtotal);
+        }
+
+        function changeQty(index, delta) {
+            cart[index].quantity += delta;
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+            updateCart();
+        }
+
+        function applyPromoCode() {
+            const val = document.getElementById('promoInput').value.trim().toUpperCase();
+            if (val === 'AURA10') {
+                appliedDiscount = 0.10;
+                document.getElementById('discountRow').classList.remove('hidden');
+                showToast('¡Descuento AURA10 aplicado (10%)!');
+            } else {
+                showToast('Código no válido. Prueba con AURA10');
+            }
+            updateCart();
+        }
+
+        function calculateCartTotals(subtotal) {
+            const discountAmount = subtotal * appliedDiscount;
+            const total = Math.max(0, subtotal - discountAmount);
+
+            document.getElementById('cartSubtotal').innerText = `$${subtotal.toFixed(2)}`;
+            document.getElementById('cartDiscount').innerText = `-$${discountAmount.toFixed(2)}`;
+            document.getElementById('cartTotal').innerText = `$${total.toFixed(2)}`;
+            document.getElementById('checkoutModalTotal').innerText = `$${total.toFixed(2)}`;
+        }
+
+        // Checkout Modal Logic
+        function openCheckoutModal() {
+            toggleCartDrawer(false);
+            document.getElementById('checkoutModal').classList.remove('hidden');
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkoutModal').classList.add('hidden');
+        }
+
+        function submitFinalOrder(event) {
+            event.preventDefault();
+            const name = document.getElementById('customerName').value;
+            closeCheckoutModal();
+            cart = [];
+            appliedDiscount = 0;
+            document.getElementById('discountRow').classList.add('hidden');
+            updateCart();
+
+            showToast(`¡Gracias ${name}! Tu pedido ha sido enviado a la barra.`);
+        }
+
+        // Interactive Quiz Logic
+        function renderQuizStep() {
+            const q = quizQuestions[currentQuizIndex];
+            document.getElementById('quizStepLabel').innerText = `Paso ${currentQuizIndex + 1} de ${quizQuestions.length}`;
+            
+            // Update Progress Dots
+            for(let i=1; i<=3; i++) {
+                const dot = document.getElementById(`dot${i}`);
+                if (i <= currentQuizIndex + 1) {
+                    dot.className = "w-8 h-2 rounded-full bg-aura-pinkRose transition-all";
+                } else {
+                    dot.className = "w-3 h-2 rounded-full bg-aura-beigeDark transition-all";
+                }
+            }
+
+            document.getElementById('quizQuestionBox').innerHTML = `
+                <h3 class="font-serif text-xl sm:text-2xl font-bold text-aura-espresso text-center mb-6">${q.question}</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    ${q.options.map(opt => `
+                        <button onclick="answerQuiz('${opt.drinkId}')" class="p-5 rounded-2xl bg-aura-pinkSoft/40 border border-aura-pinkMid/30 hover:bg-aura-pinkSoft hover:border-aura-pinkRose transition-all text-center group flex flex-col justify-center items-center">
+                            <span class="text-xs sm:text-sm font-semibold text-aura-espresso group-hover:text-aura-pinkRose transition-colors">${opt.text}</span>
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function answerQuiz(drinkId) {
+            quizAnswers.push(drinkId);
+            if (currentQuizIndex < quizQuestions.length - 1) {
+                currentQuizIndex++;
+                renderQuizStep();
+            } else {
+                showQuizResult();
+            }
+        }
+
+        function showQuizResult() {
+            document.getElementById('quizQuestionBox').classList.add('hidden');
+            document.getElementById('quizProgressDots').classList.add('hidden');
+            
+            // Pick most frequent or recommended drink
+            const recommendedId = quizAnswers[quizAnswers.length - 1] || 'p1';
+            const product = menuProducts.find(p => p.id === recommendedId);
+
+            document.getElementById('recommendedDrinkTitle').innerText = product.title;
+            document.getElementById('recommendedDrinkDesc').innerText = product.description;
+            document.getElementById('quizAddToCartBtn').innerText = `Añadir este pedido ($${product.price.toFixed(2)})`;
+            document.getElementById('quizAddToCartBtn').onclick = () => {
+                quickAddToCart(product.id);
+                toggleCartDrawer(true);
+            };
+
+            document.getElementById('quizResultBox').classList.remove('hidden');
+        }
+
+        function resetQuiz() {
+            currentQuizIndex = 0;
+            quizAnswers = [];
+            document.getElementById('quizQuestionBox').classList.remove('hidden');
+            document.getElementById('quizProgressDots').classList.remove('hidden');
+            document.getElementById('quizResultBox').classList.add('hidden');
+            renderQuizStep();
+        }
+
+        // Ambient Audio Synthesizer (Coffee Shop Lounge Hum using Web Audio API)
+        function toggleAmbientAudio() {
+            const btn = document.getElementById('ambientToggleBtn');
+            const icon = document.getElementById('soundIcon');
+            const label = document.getElementById('soundLabel');
+            const eq = document.getElementById('eqBars');
+
+            if (!isAudioPlaying) {
+                try {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    audioContext = new AudioContext();
+                    
+                    // Create soft ambient drone/lounge pad sound
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(220, audioContext.currentTime); // Soft A3 note
+                    
+                    gain.gain.setValueAtTime(0.02, audioContext.currentTime); // Low non-intrusive volume
+                    
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    
+                    osc.start();
+                    ambientOscillator = osc;
+                    isAudioPlaying = true;
+
+                    icon.className = "fa-solid fa-volume-high text-aura-pinkRose";
+                    label.innerText = "Aura Ambiance (On)";
+                    eq.classList.remove('hidden');
+                    eq.classList.add('flex');
+                    showToast('♪ Reproduciendo ambiente relajante Aura');
+                } catch(e) {
+                    showToast('Audio no soportado en este navegador.');
+                }
+            } else {
+                if (ambientOscillator) {
+                    ambientOscillator.stop();
+                    ambientOscillator.disconnect();
+                }
+                isAudioPlaying = false;
+                icon.className = "fa-solid fa-volume-xmark text-aura-pinkRose";
+                label.innerText = "Aura Lounge Audio";
+                eq.classList.add('hidden');
+                eq.classList.remove('flex');
+            }
+        }
+
+        // Newsletter Handler
+        function handleNewsletter(e) {
+            e.preventDefault();
+            showToast('✨ ¡Bienvenido al Club Aura! Revisa tu correo.');
+            e.target.reset();
+        }
+
+        // Toast Notification System
+        function showToast(message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = "toast-animate bg-aura-espresso text-white text-xs font-semibold px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-2 border border-aura-pinkMid/40 pointer-events-auto";
+            toast.innerHTML = `
+                <i class="fa-solid fa-circle-check text-aura-pinkRose text-sm"></i>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

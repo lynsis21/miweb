@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura Café - Especialidad, Matcha & Delivery</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Palette Setup -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        aura: {
+                            pink: '#F7E7E4',
+                            pinkDark: '#EAA8A0',
+                            rose: '#D98A80',
+                            beige: '#FBF8F5',
+                            mocha: '#C29B7F',
+                            mochaDark: '#784C38',
+                            espresso: '#382319',
+                            white: '#FFFFFF'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #FBF8F5;
+            color: #382319;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(234, 168, 160, 0.25);
+        }
+        .glass-nav {
+            background: rgba(251, 248, 245, 0.9);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(234, 168, 160, 0.2);
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #784C38 0%, #EAA8A0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="relative min-h-screen flex flex-col justify-between overflow-x-hidden">
+
+    <!-- Header Navigation -->
+    <header class="fixed top-0 left-0 right-0 z-40 glass-nav transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            
+            <!-- Logo -->
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-full bg-aura-pink flex items-center justify-center text-aura-mochaDark text-xl font-serif font-bold shadow-sm group-hover:scale-105 transition-transform">
+                    A
+                </div>
+                <div>
+                    <span class="font-serif text-2xl font-bold tracking-tight text-aura-espresso block leading-none">Aura</span>
+                    <span class="text-[10px] tracking-[0.2em] uppercase font-semibold text-aura-rose block">Café & Specialty</span>
+                </div>
+            </a>
+
+            <!-- Desktop Nav Links -->
+            <nav class="hidden md:flex items-center space-x-8 font-medium text-sm text-aura-espresso/80">
+                <a href="#hero" class="hover:text-aura-rose transition-colors">Inicio</a>
+                <a href="#menu" class="hover:text-aura-rose transition-colors">Menú & Delivery</a>
+                <a href="#nosotros" class="hover:text-aura-rose transition-colors">La Experiencia</a>
+                <a href="#ubicacion" class="hover:text-aura-rose transition-colors">Visítanos</a>
+            </nav>
+
+            <!-- Actions Right -->
+            <div class="flex items-center gap-3">
+                <!-- Shopping Cart Button -->
+                <button id="cartBtn" onclick="toggleCartModal(true)" class="relative bg-aura-pink/80 hover:bg-aura-pink text-aura-espresso p-3 rounded-full transition-all duration-200 flex items-center justify-center shadow-sm hover:scale-105">
+                    <i class="fa-solid fa-bag-shopping text-lg text-aura-mochaDark"></i>
+                    <span id="cartBadge" class="hidden absolute -top-1 -right-1 bg-aura-rose text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">0</span>
+                </button>
+
+                <!-- Delivery Quick Call CTA -->
+                <a href="#menu" class="hidden sm:inline-flex items-center gap-2 bg-aura-mochaDark text-white text-xs uppercase tracking-wider font-semibold px-5 py-3 rounded-full hover:bg-aura-espresso transition-all shadow-md">
+                    <i class="fa-solid fa-motorcycle"></i> Pedir Delivery
+                </a>
+
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMobileMenu()" class="md:hidden text-aura-espresso p-2 text-xl focus:outline-none">
+                    <i class="fa-solid fa-bars" id="mobileMenuIcon"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Drawer -->
+        <div id="mobileMenu" class="hidden md:hidden bg-aura-beige border-b border-aura-pinkDark/20 px-6 py-5 space-y-4 font-medium">
+            <a href="#hero" onclick="toggleMobileMenu()" class="block text-aura-espresso hover:text-aura-rose">Inicio</a>
+            <a href="#menu" onclick="toggleMobileMenu()" class="block text-aura-espresso hover:text-aura-rose">Menú & Delivery</a>
+            <a href="#nosotros" onclick="toggleMobileMenu()" class="block text-aura-espresso hover:text-aura-rose">La Experiencia</a>
+            <a href="#ubicacion" onclick="toggleMobileMenu()" class="block text-aura-espresso hover:text-aura-rose">Ubicación y Horarios</a>
+            <div class="pt-2">
+                <a href="#menu" onclick="toggleMobileMenu()" class="w-full inline-flex items-center justify-center gap-2 bg-aura-rose text-white font-semibold py-3 rounded-full">
+                    <i class="fa-solid fa-motorcycle"></i> Pedir en Línea
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Banner Section -->
+    <section id="hero" class="relative pt-28 pb-16 md:pt-36 md:pb-24 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-12 gap-8 items-center">
+                
+                <!-- Left Text Content -->
+                <div class="md:col-span-6 space-y-6 text-center md:text-left z-10">
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-aura-pink text-aura-mochaDark text-xs font-semibold tracking-wide border border-aura-pinkDark/30">
+                        <span class="w-2 h-2 rounded-full bg-aura-rose animate-pulse"></span>
+                        Café de Especialidad & Matcha Bar
+                    </div>
+                    
+                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-aura-espresso leading-[1.15]">
+                        Siente el aura de un <span class="text-gradient italic">buen café</span> en cada sorbo.
+                    </h1>
+
+                    <p class="text-aura-espresso/70 text-base sm:text-lg max-w-xl mx-auto md:mx-0 leading-relaxed font-light">
+                        Un espacio moderno y acogedor donde seleccionamos cuidadosamente nuestros granos de origen y preparamos el Matcha ceremonial perfecto para tu día.
+                    </p>
+
+                    <div class="pt-4 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                        <a href="#menu" class="bg-aura-mochaDark hover:bg-aura-espresso text-white text-sm font-semibold px-8 py-4 rounded-full shadow-lg shadow-aura-mochaDark/20 hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3">
+                            <span>Explorar Menú</span>
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </a>
+                        <a href="#matcha-special" class="bg-white hover:bg-aura-pink/50 text-aura-espresso border border-aura-pinkDark/40 text-sm font-semibold px-8 py-4 rounded-full transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-leaf text-green-600"></i>
+                            <span>Especial Matcha</span>
+                        </a>
+                    </div>
+
+                    <!-- Trust indicators -->
+                    <div class="pt-6 border-t border-aura-pinkDark/20 flex items-center justify-center md:justify-start gap-8 text-xs text-aura-espresso/70">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-star text-amber-400 text-sm"></i>
+                            <span>4.9/5 Reseñas de Clientes</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-truck-fast text-aura-rose text-sm"></i>
+                            <span>Delivery Express en la ciudad</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Hero Image Showcase -->
+                <div class="md:col-span-6 relative">
+                    <div class="relative mx-auto max-w-md lg:max-w-none">
+                        <!-- Aesthetic Ambient Glow behind image -->
+                        <div class="absolute -top-10 -left-10 w-72 h-72 bg-aura-pink rounded-full blur-3xl opacity-70"></div>
+                        <div class="absolute -bottom-10 -right-10 w-72 h-72 bg-aura-pinkDark/30 rounded-full blur-3xl opacity-70"></div>
+
+                        <!-- Main Image Container with modern shadow and rounded corners -->
+                        <div class="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white/80 transform hover:scale-[1.01] transition-transform duration-500">
+                            <!-- High quality modern aesthetic cafe header photo -->
+                            <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1200&q=80" alt="Interior moderno de Aura Café" class="w-full h-[400px] sm:h-[480px] object-cover">
+                            
+                            <!-- Overlay Gradient -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-aura-espresso/60 via-transparent to-transparent"></div>
+
+                            <!-- Floating Badge 1: Matcha Card -->
+                            <div class="absolute bottom-6 left-6 right-6 glass-card p-4 rounded-2xl flex items-center gap-4 border border-white/50 shadow-lg">
+                                <div class="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-700 text-xl font-bold flex-shrink-0">
+                                    🍵
+                                </div>
+                                <div class="flex-grow">
+                                    <h4 class="font-bold text-aura-espresso text-sm">Matcha Ceremonial</h4>
+                                    <p class="text-xs text-aura-espresso/70">Caliente con leche de avena o Iced con espuma fría</p>
+                                </div>
+                                <span class="bg-aura-rose text-white text-xs font-bold px-3 py-1.5 rounded-full">Probar</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Matcha Spotlight Section -->
+    <section id="matcha-special" class="py-12 bg-gradient-to-r from-aura-pink/40 via-white to-aura-pink/30 border-y border-aura-pinkDark/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-3xl p-6 md:p-10 shadow-sm border border-aura-pinkDark/30 grid md:grid-cols-12 gap-8 items-center">
+                <div class="md:col-span-5 relative">
+                    <img src="https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&w=800&q=80" alt="Matcha Bar Aura" class="rounded-2xl w-full h-64 sm:h-80 object-cover shadow-md">
+                    <span class="absolute top-4 left-4 bg-emerald-600 text-white text-xs uppercase tracking-wider font-bold px-3 py-1 rounded-full">Novedad</span>
+                </div>
+                <div class="md:col-span-7 space-y-4">
+                    <div class="inline-flex items-center gap-2 text-emerald-800 font-semibold text-xs tracking-wider uppercase bg-emerald-50 px-3 py-1 rounded-md">
+                        <i class="fa-solid fa-leaf"></i> Grado Ceremonial de Uji, Japón
+                    </div>
+                    <h2 class="font-serif text-3xl font-bold text-aura-espresso">Especiales Matcha Bar</h2>
+                    <p class="text-aura-espresso/70 text-sm sm:text-base leading-relaxed">
+                        Preparamos nuestro matcha batiendo la harina pura al momento para garantizar su color vibrante, textura sedosa y perfil antioxidante supremo. Disfrútalo en sus dos versiones exclusivas.
+                    </p>
+                    
+                    <div class="grid sm:grid-cols-2 gap-4 pt-2">
+                        <!-- Hot Matcha Card -->
+                        <div class="p-4 rounded-xl border border-aura-pinkDark/20 bg-aura-beige hover:border-aura-rose transition-all">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-bold text-aura-espresso text-base">Matcha Laté Caliente</h3>
+                                <span class="font-bold text-aura-mochaDark text-sm">Q35.00</span>
+                            </div>
+                            <p class="text-xs text-aura-espresso/60 mb-3">Vaporizado con microespuma cremosa de almendra o avena.</p>
+                            <button onclick="openCustomizeModal('item-m1')" class="w-full bg-white hover:bg-aura-pink text-aura-espresso text-xs font-semibold py-2 rounded-lg border border-aura-pinkDark/30 transition-colors">
+                                + Agregar / Personalizar
+                            </button>
+                        </div>
+
+                        <!-- Cold Iced Matcha Card -->
+                        <div class="p-4 rounded-xl border border-aura-pinkDark/20 bg-aura-beige hover:border-aura-rose transition-all">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-bold text-aura-espresso text-base">Iced Strawberry Matcha</h3>
+                                <span class="font-bold text-aura-mochaDark text-sm">Q42.00</span>
+                            </div>
+                            <p class="text-xs text-aura-espresso/60 mb-3">Base de fresas orgánicas maceradas, leche y capa de matcha.</p>
+                            <button onclick="openCustomizeModal('item-m2')" class="w-full bg-white hover:bg-aura-pink text-aura-espresso text-xs font-semibold py-2 rounded-lg border border-aura-pinkDark/30 transition-colors">
+                                + Agregar / Personalizar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Menu & Delivery Section -->
+    <section id="menu" class="py-16 md:py-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- Section Header -->
+            <div class="text-center max-w-2xl mx-auto mb-12 space-y-3">
+                <span class="text-aura-rose font-semibold text-xs tracking-widest uppercase">Selección Exclusiva</span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-aura-espresso">Nuestro Menú de Especialidad</h2>
+                <p class="text-aura-espresso/70 text-sm">Elige tus bebidas y repostería preferida. Haz tu pedido directamente para delivery o pickup.</p>
+            </div>
+
+            <!-- Search and Filter Bar -->
+            <div class="max-w-3xl mx-auto mb-10 space-y-4">
+                <div class="relative">
+                    <input type="text" id="menuSearch" onkeyup="filterMenu()" placeholder="Buscar por nombre (ej. Latte, Matcha, Croissant)..." class="w-full bg-white border border-aura-pinkDark/30 rounded-full py-3.5 pl-12 pr-4 text-sm text-aura-espresso placeholder-aura-espresso/40 focus:outline-none focus:ring-2 focus:ring-aura-rose/50 shadow-sm">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-aura-espresso/40"></i>
+                </div>
+
+                <!-- Category Pills Navigation -->
+                <div class="flex items-center gap-2 overflow-x-auto pb-2 hide-scrollbar justify-start sm:justify-center">
+                    <button onclick="setCategory('all')" class="cat-btn active bg-aura-espresso text-white px-5 py-2 rounded-full text-xs font-semibold tracking-wide transition-all flex-shrink-0">
+                        Todos
+                    </button>
+                    <button onclick="setCategory('cafe')" class="cat-btn bg-white hover:bg-aura-pink/50 text-aura-espresso border border-aura-pinkDark/20 px-5 py-2 rounded-full text-xs font-semibold tracking-wide transition-all flex-shrink-0">
+                        ☕ Cafés de Especialidad
+                    </button>
+                    <button onclick="setCategory('matcha')" class="cat-btn bg-white hover:bg-aura-pink/50 text-aura-espresso border border-aura-pinkDark/20 px-5 py-2 rounded-full text-xs font-semibold tracking-wide transition-all flex-shrink-0">
+                        🍵 Matcha & Tés
+                    </button>
+                    <button onclick="setCategory('frias')" class="cat-btn bg-white hover:bg-aura-pink/50 text-aura-espresso border border-aura-pinkDark/20 px-5 py-2 rounded-full text-xs font-semibold tracking-wide transition-all flex-shrink-0">
+                        🧋 Bebidas Frías
+                    </button>
+                    <button onclick="setCategory('reposteria')" class="cat-btn bg-white hover:bg-aura-pink/50 text-aura-espresso border border-aura-pinkDark/20 px-5 py-2 rounded-full text-xs font-semibold tracking-wide transition-all flex-shrink-0">
+                        🥐 Repostería & Toast
+                    </button>
+                </div>
+            </div>
+
+            <!-- Menu Items Grid -->
+            <div id="menuGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                <!-- Dynamically Rendered JS Items -->
+            </div>
+
+            <!-- Empty Search State -->
+            <div id="emptyMenuState" class="hidden text-center py-16">
+                <i class="fa-solid fa-mug-hot text-4xl text-aura-rose/50 mb-3"></i>
+                <p class="text-aura-espresso font-medium">No encontramos productos que coincidan con tu búsqueda.</p>
+                <button onclick="resetSearch()" class="mt-3 text-xs text-aura-rose font-bold uppercase underline">Ver todo el menú</button>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- About & Coffee Origins Experience -->
+    <section id="nosotros" class="py-16 bg-aura-pink/30 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-12 gap-12 items-center">
+                
+                <div class="md:col-span-6 order-2 md:order-1">
+                    <div class="grid grid-cols-2 gap-4">
+                        <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80" alt="Método V60" class="rounded-2xl shadow-md w-full h-52 object-cover">
+                        <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80" alt="Grano especialidad" class="rounded-2xl shadow-md w-full h-52 object-cover mt-6">
+                    </div>
+                </div>
+
+                <div class="md:col-span-6 space-y-5 order-1 md:order-2">
+                    <span class="text-aura-rose font-semibold text-xs uppercase tracking-widest">Nuestra Pasión</span>
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-aura-espresso">Más que una taza, una experiencia estética</h2>
+                    <p class="text-aura-espresso/70 text-sm sm:text-base leading-relaxed">
+                        En Aura Café seleccionamos micro-lotes de granos cultivados en fincas sostenibles. Cada taza es calibrada diariamente por nuestros baristas para resaltar notas florales, afrutadas y achocolatadas.
+                    </p>
+
+                    <div class="space-y-3 pt-2">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-aura-rose font-bold text-sm shadow-sm flex-shrink-0">1</div>
+                            <div>
+                                <h4 class="font-bold text-aura-espresso text-sm">Métodos Filtrados Manuales</h4>
+                                <p class="text-xs text-aura-espresso/60">V60, Chemex y Aeropress ajustados para maximizar aromas.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-aura-rose font-bold text-sm shadow-sm flex-shrink-0">2</div>
+                            <div>
+                                <h4 class="font-bold text-aura-espresso text-sm">Leches Vegetales de Especialidad</h4>
+                                <p class="text-xs text-aura-espresso/60">Avena barista de alto perfil para lograr la microespuma más sedosa.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-aura-rose font-bold text-sm shadow-sm flex-shrink-0">3</div>
+                            <div>
+                                <h4 class="font-bold text-aura-espresso text-sm">Repostería Fresca Horneada</h4>
+                                <p class="text-xs text-aura-espresso/60">Croissants de mantequilla purísima y opciones veganas horneadas cada mañana.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Location, Hours & Contact -->
+    <section id="ubicacion" class="py-16 md:py-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-aura-espresso text-white rounded-3xl overflow-hidden shadow-2xl grid md:grid-cols-12">
+                
+                <!-- Contact Info -->
+                <div class="md:col-span-6 p-8 sm:p-12 space-y-6 flex flex-col justify-between">
+                    <div>
+                        <span class="text-aura-pinkDark font-semibold text-xs tracking-widest uppercase">Te esperamos</span>
+                        <h2 class="font-serif text-3xl sm:text-4xl font-bold mt-2">Visítanos en el Local</h2>
+                        <p class="text-white/70 text-sm mt-3">Disfruta de nuestra música suave, excelente iluminación natural y el mejor ambiente para trabajar o compartir.</p>
+                    </div>
+
+                    <div class="space-y-4 text-sm text-white/90">
+                        <div class="flex items-start gap-4">
+                            <i class="fa-solid fa-location-dot text-aura-pinkDark text-lg mt-1"></i>
+                            <div>
+                                <strong class="block text-white font-semibold">Dirección:</strong>
+                                <span>Av. Primavera 1042, Zona Gourmet (Aura Building)</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4">
+                            <i class="fa-solid fa-clock text-aura-pinkDark text-lg mt-1"></i>
+                            <div>
+                                <strong class="block text-white font-semibold">Horarios de Atención:</strong>
+                                <span>Lunes a Viernes: 7:00 AM - 8:30 PM</span><br>
+                                <span>Sábados y Domingos: 8:00 AM - 9:00 PM</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4">
+                            <i class="fa-solid fa-phone text-aura-pinkDark text-lg mt-1"></i>
+                            <div>
+                                <strong class="block text-white font-semibold">Contacto & Delivery:</strong>
+                                <span>+502 2345-6789</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex items-center gap-4">
+                        <a href="https://instagram.com" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-aura-rose flex items-center justify-center text-white transition-colors">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                        <a href="https://wa.me/50255551234" target="_blank" class="w-10 h-10 rounded-full bg-emerald-600 hover:bg-emerald-500 flex items-center justify-center text-white transition-colors">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </a>
+                        <span class="text-xs text-white/50">Síguenos en @auracafe.esp</span>
+                    </div>
+                </div>
+
+                <!-- Simulated Map Graphic / Visual -->
+                <div class="md:col-span-6 bg-aura-mochaDark/30 relative min-h-[300px] flex items-center justify-center p-8">
+                    <img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80" alt="Vista exterior Aura Cafe" class="absolute inset-0 w-full h-full object-cover opacity-40">
+                    <div class="relative glass-card p-6 rounded-2xl text-center space-y-3 max-w-sm border border-white/30">
+                        <div class="w-12 h-12 rounded-full bg-aura-rose text-white flex items-center justify-center mx-auto text-xl shadow-md">
+                            <i class="fa-solid fa-map-pin"></i>
+                        </div>
+                        <h4 class="font-serif font-bold text-aura-espresso text-lg">¿Cómo llegar?</h4>
+                        <p class="text-xs text-aura-espresso/70">A un par de cuadras del parque central. Contamos con estacionamiento para bicicletas y zona pet friendly.</p>
+                        <a href="https://maps.google.com" target="_blank" class="inline-block bg-aura-espresso text-white text-xs font-semibold px-5 py-2.5 rounded-full hover:bg-aura-mochaDark transition-colors">
+                            Abrir en Google Maps
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-aura-pinkDark/20 py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-aura-pink flex items-center justify-center text-aura-mochaDark font-serif font-bold text-sm">A</div>
+                <span class="font-serif font-bold text-aura-espresso text-lg">Aura Café</span>
+                <span class="text-xs text-aura-espresso/40">© 2026 Todos los derechos reservados.</span>
+            </div>
+
+            <div class="flex items-center space-x-6 text-xs font-medium text-aura-espresso/70">
+                <a href="#hero" class="hover:text-aura-rose">Inicio</a>
+                <a href="#menu" class="hover:text-aura-rose">Menú</a>
+                <a href="#nosotros" class="hover:text-aura-rose">Nosotros</a>
+                <a href="#ubicacion" class="hover:text-aura-rose">Contacto</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating WhatsApp Delivery Button -->
+    <a href="https://wa.me/50255551234?text=Hola%20Aura%20Caf%C3%A9,%20quisiera%20consultar%20sobre%20el%20men%C3%BA%20o%20hacer%20un%20pedido" target="_blank" class="fixed bottom-6 right-6 z-30 bg-emerald-500 hover:bg-emerald-600 text-white p-4 rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110 group">
+        <i class="fa-brands fa-whatsapp text-2xl"></i>
+        <span class="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 ease-in-out whitespace-nowrap text-xs font-bold pl-0 group-hover:pl-2">
+            Pedir por WhatsApp
+        </span>
+    </a>
+
+    <!-- Item Customization Modal -->
+    <div id="customizeModal" class="fixed inset-0 z-50 hidden bg-aura-espresso/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-aura-pink relative animate-fade-in">
+            <!-- Close Button -->
+            <button onclick="closeCustomizeModal()" class="absolute top-4 right-4 text-aura-espresso/40 hover:text-aura-espresso text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center gap-4">
+                <img id="modalItemImage" src="" alt="" class="w-20 h-20 rounded-2xl object-cover shadow-sm">
+                <div>
+                    <span id="modalItemTag" class="text-[10px] uppercase tracking-wider font-bold text-aura-rose bg-aura-pink/60 px-2.5 py-0.5 rounded-full">Bebida</span>
+                    <h3 id="modalItemTitle" class="font-serif text-xl font-bold text-aura-espresso">Nombre</h3>
+                    <p id="modalItemPrice" class="text-aura-mochaDark font-bold text-base">Q0.00</p>
+                </div>
+            </div>
+
+            <!-- Custom Options Form -->
+            <div class="space-y-4 text-xs">
+                <!-- Milk Choice (if applicable) -->
+                <div id="milkOptionGroup">
+                    <label class="block font-bold text-aura-espresso uppercase tracking-wider mb-2">Selecciona Leche:</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-aura-pinkDark/30 hover:border-aura-rose cursor-pointer">
+                            <input type="radio" name="milkChoice" value="Avena (+ Q5.00)" checked class="accent-aura-rose">
+                            <span>Avena (Barista)</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-aura-pinkDark/30 hover:border-aura-rose cursor-pointer">
+                            <input type="radio" name="milkChoice" value="Almendra (+ Q5.00)" class="accent-aura-rose">
+                            <span>Almendra</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-aura-pinkDark/30 hover:border-aura-rose cursor-pointer">
+                            <input type="radio" name="milkChoice" value="Entera" class="accent-aura-rose">
+                            <span>Entera Pura</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-aura-pinkDark/30 hover:border-aura-rose cursor-pointer">
+                            <input type="radio" name="milkChoice" value="Deslactosada" class="accent-aura-rose">
+                            <span>Deslactosada</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Sweetness Level -->
+                <div id="sweetnessOptionGroup">
+                    <label class="block font-bold text-aura-espresso uppercase tracking-wider mb-2">Nivel de Dulzor / Endulzante:</label>
+                    <select id="sweetnessChoice" class="w-full bg-aura-beige border border-aura-pinkDark/30 rounded-xl p-2.5 text-xs text-aura-espresso focus:outline-none">
+                        <option value="Standard">Normal (Jarabe artesanal)</option>
+                        <option value="Poco Dulce">Poco dulce (50%)</option>
+                        <option value="Sin Azúcar">Sin azúcar añadido</option>
+                        <option value="Jarabe Vainilla Rosa (+ Q6.00)">Jarabe de Vainilla Rosa (+ Q6.00)</option>
+                    </select>
+                </div>
+
+                <!-- Special Notes -->
+                <div>
+                    <label class="block font-bold text-aura-espresso uppercase tracking-wider mb-1">Notas especiales:</label>
+                    <input type="text" id="specialNotes" placeholder="Ej. Extra caliente, extra hielo..." class="w-full bg-aura-beige border border-aura-pinkDark/30 rounded-xl p-2.5 text-xs text-aura-espresso placeholder-aura-espresso/40">
+                </div>
+            </div>
+
+            <!-- Confirm Add -->
+            <button id="confirmAddToCartBtn" onclick="confirmAddToCart()" class="w-full bg-aura-mochaDark hover:bg-aura-espresso text-white font-bold py-3.5 rounded-2xl shadow-lg transition-colors flex items-center justify-center gap-2 text-sm">
+                <i class="fa-solid fa-plus"></i> Agregar al Carrito
+            </button>
+        </div>
+    </div>
+
+    <!-- Shopping Cart Offcanvas Drawer -->
+    <div id="cartModal" class="fixed inset-0 z-50 hidden bg-aura-espresso/60 backdrop-blur-sm flex justify-end transition-opacity">
+        <div class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col justify-between p-6 sm:p-8 overflow-y-auto">
+            
+            <div>
+                <!-- Cart Header -->
+                <div class="flex items-center justify-between pb-4 border-b border-aura-pinkDark/20">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-bag-shopping text-aura-rose text-xl"></i>
+                        <h3 class="font-serif text-xl font-bold text-aura-espresso">Tu Pedido</h3>
+                    </div>
+                    <button onclick="toggleCartModal(false)" class="text-aura-espresso/40 hover:text-aura-espresso text-xl">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Order Type Toggle: Delivery vs Pickup -->
+                <div class="my-4 bg-aura-beige p-1 rounded-2xl flex border border-aura-pinkDark/20">
+                    <button id="typeDeliveryBtn" onclick="setOrderType('delivery')" class="flex-1 py-2 rounded-xl text-xs font-bold transition-all bg-aura-espresso text-white shadow-sm">
+                        <i class="fa-solid fa-motorcycle mr-1"></i> Delivery
+                    </button>
+                    <button id="typePickupBtn" onclick="setOrderType('pickup')" class="flex-1 py-2 rounded-xl text-xs font-bold text-aura-espresso/70 hover:text-aura-espresso transition-all">
+                        <i class="fa-solid fa-store mr-1"></i> Para Llevar
+                    </button>
+                </div>
+
+                <!-- Cart Items List -->
+                <div id="cartItemsList" class="space-y-4 py-4 min-h-[180px]">
+                    <!-- Items rendered dynamically -->
+                </div>
+            </div>
+
+            <!-- Cart Footer & Checkout -->
+            <div class="pt-4 border-t border-aura-pinkDark/20 space-y-4">
+                
+                <!-- Delivery Details Form -->
+                <div id="deliveryFormFields" class="space-y-2">
+                    <input type="text" id="custName" placeholder="Tu Nombre Completo *" class="w-full bg-aura-beige border border-aura-pinkDark/30 rounded-xl p-2.5 text-xs text-aura-espresso">
+                    <input type="text" id="custAddress" placeholder="Dirección de Entrega / Referencias *" class="w-full bg-aura-beige border border-aura-pinkDark/30 rounded-xl p-2.5 text-xs text-aura-espresso">
+                </div>
+
+                <!-- Price Summary -->
+                <div class="space-y-1.5 text-xs text-aura-espresso/80">
+                    <div class="flex justify-between">
+                        <span>Subtotal:</span>
+                        <span id="cartSubtotal">Q0.00</span>
+                    </div>
+                    <div class="flex justify-between" id="deliveryFeeRow">
+                        <span>Costo de envío (Delivery):</span>
+                        <span id="cartDeliveryFee">Q30.00</span>
+                    </div>
+                    <div class="flex justify-between font-bold text-sm text-aura-espresso pt-2 border-t border-aura-pinkDark/20">
+                        <span>Total estimado:</span>
+                        <span id="cartTotal" class="text-aura-mochaDark font-serif text-lg">Q0.00</span>
+                    </div>
+                </div>
+
+                <!-- Checkout WhatsApp Button -->
+                <button onclick="sendOrderToWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-2xl shadow-lg transition-colors flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                    <span>Confirmar Pedido por WhatsApp</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Application Logic Script -->
+    <script>
+        // Data Structure for Aura Café Menu (Prices in Quetzales GT - Q)
+        const menuItems = [
+            // MATCHA CATEGORY
+            {
+                id: 'item-m1',
+                category: 'matcha',
+                title: 'Matcha Laté Caliente',
+                price: 35.00,
+                tag: 'Popular',
+                image: 'https://images.unsplash.com/photo-1515823689200-0b22e7cb8def?auto=format&fit=crop&w=600&q=80',
+                desc: 'Matcha ceremonial pura con microespuma de leche de avena o almendra vaporizada.',
+                hasMilkOption: true
+            },
+            {
+                id: 'item-m2',
+                category: 'matcha',
+                title: 'Iced Strawberry Matcha',
+                price: 42.00,
+                tag: 'Recomendado',
+                image: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&w=600&q=80',
+                desc: 'Base de puré de fresas casero, leche fría y vertido de matcha verde intenso sobre hielo.',
+                hasMilkOption: true
+            },
+            {
+                id: 'item-m3',
+                category: 'matcha',
+                title: 'Iced Vanilla Matcha Cream',
+                price: 40.00,
+                tag: 'Frío',
+                image: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80',
+                desc: 'Matcha frío infundido con vainilla natural y topped con crema suave de leche.',
+                hasMilkOption: true
+            },
+
+            // SPECIALTY COFFEE CATEGORY
+            {
+                id: 'item-c1',
+                category: 'cafe',
+                title: 'Aura Rose Latte',
+                price: 38.00,
+                tag: 'Firma Aura',
+                image: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=600&q=80',
+                desc: 'Doble espresso especialidad, infusión de agua de rosas y jarabe suave de vainilla orgánica.',
+                hasMilkOption: true
+            },
+            {
+                id: 'item-c2',
+                category: 'cafe',
+                title: 'Flat White de Origen',
+                price: 34.00,
+                tag: 'Clásico',
+                image: 'https://images.unsplash.com/photo-1577968897966-3d4325b36b61?auto=format&fit=crop&w=600&q=80',
+                desc: 'Dos shots de espresso ristretto cubiertos con una capa fina de leche aterciopelada.',
+                hasMilkOption: true
+            },
+            {
+                id: 'item-c3',
+                category: 'cafe',
+                title: 'Filtrado V60 Artesanal',
+                price: 32.00,
+                tag: 'Especialidad',
+                image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80',
+                desc: 'Extracción limpia en goteo que resalta notas a jazmín, miel y durazno.',
+                hasMilkOption: false
+            },
+
+            // COLD DRINKS
+            {
+                id: 'item-f1',
+                category: 'frias',
+                title: 'Iced Espresso Tonic',
+                price: 35.00,
+                tag: 'Refrescante',
+                image: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=600&q=80',
+                desc: 'Agua tónica artesanal con hielo, shot doble espresso frío y toque de rodaja de naranja.',
+                hasMilkOption: false
+            },
+            {
+                id: 'item-f2',
+                category: 'frias',
+                title: 'Cold Brew Rose Cloud',
+                price: 38.00,
+                tag: 'Firma',
+                image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=600&q=80',
+                desc: 'Café macerado en frío durante 18 horas con una nube de crema rosada de almendras.',
+                hasMilkOption: true
+            },
+
+            // BAKERY & BRUNCH
+            {
+                id: 'item-b1',
+                category: 'reposteria',
+                title: 'Croissant de Almendras',
+                price: 30.00,
+                tag: 'Recién Horneado',
+                image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=600&q=80',
+                desc: 'Crujiente hojaldre francés relleno de crema frangipane y láminas tostadas de almendra.',
+                hasMilkOption: false
+            },
+            {
+                id: 'item-b2',
+                category: 'reposteria',
+                title: 'Avocado Toast & Huevos Pochados',
+                price: 60.00,
+                tag: 'Brunch',
+                image: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=600&q=80',
+                desc: 'Pan de masa madre con crema de aguacate fresco, semillas, brotes y huevo orgánico.',
+                hasMilkOption: false
+            }
+        ];
+
+        // App State
+        let activeCategory = 'all';
+        let cart = [];
+        let currentItemForCustomization = null;
+        let orderType = 'delivery'; // 'delivery' or 'pickup'
+
+        // Render Menu Items
+        function renderMenu() {
+            const grid = document.getElementById('menuGrid');
+            const emptyState = document.getElementById('emptyMenuState');
+            const searchVal = document.getElementById('menuSearch').value.toLowerCase().trim();
+
+            grid.innerHTML = '';
+
+            const filtered = menuItems.filter(item => {
+                const matchesCat = activeCategory === 'all' || item.category === activeCategory;
+                const matchesSearch = item.title.toLowerCase().includes(searchVal) || item.desc.toLowerCase().includes(searchVal);
+                return matchesCat && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-3xl p-5 shadow-sm border border-aura-pinkDark/20 flex flex-col justify-between hover:shadow-md hover:border-aura-rose transition-all duration-300 group';
+                card.innerHTML = `
+                    <div>
+                        <div class="relative overflow-hidden rounded-2xl mb-4 h-48">
+                            <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <span class="absolute top-3 left-3 bg-white/90 backdrop-blur-md text-aura-espresso text-[11px] font-bold px-3 py-1 rounded-full shadow-sm">
+                                ${item.tag}
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="font-serif font-bold text-aura-espresso text-lg group-hover:text-aura-rose transition-colors">${item.title}</h3>
+                            <span class="font-bold text-aura-mochaDark text-base font-serif">Q${item.price.toFixed(2)}</span>
+                        </div>
+                        <p class="text-aura-espresso/65 text-xs leading-relaxed mb-4">${item.desc}</p>
+                    </div>
+
+                    <button onclick="openCustomizeModal('${item.id}')" class="w-full bg-aura-pink/60 hover:bg-aura-rose hover:text-white text-aura-espresso font-semibold text-xs py-3 rounded-2xl transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>Agregar al Pedido</span>
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Category Switcher
+        function setCategory(cat) {
+            activeCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.classList.remove('bg-aura-espresso', 'text-white');
+                btn.classList.add('bg-white', 'text-aura-espresso');
+            });
+            event.currentTarget.classList.remove('bg-white', 'text-aura-espresso');
+            event.currentTarget.classList.add('bg-aura-espresso', 'text-white');
+            renderMenu();
+        }
+
+        // Filter by Search Input
+        function filterMenu() {
+            renderMenu();
+        }
+
+        function resetSearch() {
+            document.getElementById('menuSearch').value = '';
+            setCategory('all');
+        }
+
+        // Customization Modal Handlers
+        function openCustomizeModal(itemId) {
+            currentItemForCustomization = menuItems.find(i => i.id === itemId);
+            if (!currentItemForCustomization) return;
+
+            document.getElementById('modalItemImage').src = currentItemForCustomization.image;
+            document.getElementById('modalItemTitle').innerText = currentItemForCustomization.title;
+            document.getElementById('modalItemPrice').innerText = `Q${currentItemForCustomization.price.toFixed(2)}`;
+            document.getElementById('modalItemTag').innerText = currentItemForCustomization.tag;
+
+            const milkGroup = document.getElementById('milkOptionGroup');
+            if (currentItemForCustomization.hasMilkOption) {
+                milkGroup.classList.remove('hidden');
+            } else {
+                milkGroup.classList.add('hidden');
+            }
+
+            document.getElementById('specialNotes').value = '';
+            document.getElementById('customizeModal').classList.remove('hidden');
+        }
+
+        function closeCustomizeModal() {
+            document.getElementById('customizeModal').classList.add('hidden');
+            currentItemForCustomization = null;
+        }
+
+        function confirmAddToCart() {
+            if (!currentItemForCustomization) return;
+
+            let milkVal = '';
+            if (currentItemForCustomization.hasMilkOption) {
+                const milkRadio = document.querySelector('input[name="milkChoice"]:checked');
+                milkVal = milkRadio ? milkRadio.value : 'Avena';
+            }
+
+            const sweetnessVal = document.getElementById('sweetnessChoice').value;
+            const notesVal = document.getElementById('specialNotes').value.trim();
+
+            const cartItem = {
+                cartId: Date.now(),
+                title: currentItemForCustomization.title,
+                basePrice: currentItemForCustomization.price,
+                milk: milkVal,
+                sweetness: sweetnessVal,
+                notes: notesVal,
+                qty: 1
+            };
+
+            cart.push(cartItem);
+            updateCartUI();
+            closeCustomizeModal();
+            toggleCartModal(true);
+        }
+
+        // Cart Modal & Order Types
+        function toggleCartModal(show) {
+            const modal = document.getElementById('cartModal');
+            if (show) {
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function setOrderType(type) {
+            orderType = type;
+            const delBtn = document.getElementById('typeDeliveryBtn');
+            const picBtn = document.getElementById('typePickupBtn');
+            const delFeeRow = document.getElementById('deliveryFeeRow');
+            const delFields = document.getElementById('deliveryFormFields');
+
+            if (type === 'delivery') {
+                delBtn.className = 'flex-1 py-2 rounded-xl text-xs font-bold transition-all bg-aura-espresso text-white shadow-sm';
+                picBtn.className = 'flex-1 py-2 rounded-xl text-xs font-bold text-aura-espresso/70 hover:text-aura-espresso transition-all';
+                delFeeRow.classList.remove('hidden');
+                delFields.classList.remove('hidden');
+            } else {
+                picBtn.className = 'flex-1 py-2 rounded-xl text-xs font-bold transition-all bg-aura-espresso text-white shadow-sm';
+                delBtn.className = 'flex-1 py-2 rounded-xl text-xs font-bold text-aura-espresso/70 hover:text-aura-espresso transition-all';
+                delFeeRow.classList.add('hidden');
+                delFields.classList.add('hidden');
+            }
+            updateCartUI();
+        }
+
+        function updateCartQuantity(cartId, delta) {
+            const index = cart.findIndex(i => i.cartId === cartId);
+            if (index !== -1) {
+                cart[index].qty += delta;
+                if (cart[index].qty <= 0) {
+                    cart.splice(index, 1);
+                }
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const list = document.getElementById('cartItemsList');
+            const badge = document.getElementById('cartBadge');
+            list.innerHTML = '';
+
+            let subtotal = 0;
+            let totalCount = 0;
+
+            if (cart.length === 0) {
+                list.innerHTML = `
+                    <div class="text-center py-10 text-aura-espresso/50 space-y-2">
+                        <i class="fa-solid fa-mug-hot text-3xl text-aura-rose/40"></i>
+                        <p class="text-xs">Tu carrito está vacío.</p>
+                    </div>
+                `;
+                badge.classList.add('hidden');
+            } else {
+                cart.forEach(item => {
+                    const itemTotal = item.basePrice * item.qty;
+                    subtotal += itemTotal;
+                    totalCount += item.qty;
+
+                    const row = document.createElement('div');
+                    row.className = 'bg-aura-beige p-3.5 rounded-2xl border border-aura-pinkDark/20 flex items-center justify-between gap-3 text-xs';
+                    row.innerHTML = `
+                        <div class="flex-grow space-y-0.5">
+                            <h4 class="font-bold text-aura-espresso">${item.title}</h4>
+                            ${item.milk ? `<p class="text-[10px] text-aura-espresso/60">Leche: ${item.milk}</p>` : ''}
+                            <p class="text-[10px] text-aura-espresso/60">Dulzor: ${item.sweetness}</p>
+                            ${item.notes ? `<p class="text-[10px] italic text-aura-rose">"${item.notes}"</p>` : ''}
+                            <span class="font-bold text-aura-mochaDark text-xs block font-serif">Q${itemTotal.toFixed(2)}</span>
+                        </div>
+
+                        <div class="flex items-center gap-2 bg-white px-2 py-1 rounded-xl border border-aura-pinkDark/20">
+                            <button onclick="updateCartQuantity(${item.cartId}, -1)" class="w-5 h-5 flex items-center justify-center text-aura-espresso hover:text-aura-rose font-bold">-</button>
+                            <span class="font-bold text-xs">${item.qty}</span>
+                            <button onclick="updateCartQuantity(${item.cartId}, 1)" class="w-5 h-5 flex items-center justify-center text-aura-espresso hover:text-aura-rose font-bold">+</button>
+                        </div>
+                    `;
+                    list.appendChild(row);
+                });
+
+                badge.innerText = totalCount;
+                badge.classList.remove('hidden');
+            }
+
+            const deliveryFee = orderType === 'delivery' && cart.length > 0 ? 30.00 : 0.00;
+            const total = subtotal + deliveryFee;
+
+            document.getElementById('cartSubtotal').innerText = `Q${subtotal.toFixed(2)}`;
+            document.getElementById('cartDeliveryFee').innerText = `Q${deliveryFee.toFixed(2)}`;
+            document.getElementById('cartTotal').innerText = `Q${total.toFixed(2)}`;
+        }
+
+        // Send Order to WhatsApp
+        function sendOrderToWhatsApp() {
+            if (cart.length === 0) {
+                alert('Añade al menos un producto al carrito para realizar tu pedido.');
+                return;
+            }
+
+            const name = document.getElementById('custName').value.trim();
+            const address = document.getElementById('custAddress').value.trim();
+
+            if (orderType === 'delivery' && (!name || !address)) {
+                alert('Por favor ingresa tu nombre y dirección para la entrega.');
+                return;
+            }
+
+            let text = `✨ *NUEVO PEDIDO AURA CAFÉ* ✨\n\n`;
+            text += `*Modalidad:* ${orderType === 'delivery' ? '🛵 Delivery a Domicilio' : '🏪 Para Llevar (Pickup)'}\n`;
+            if (name) text += `*Cliente:* ${name}\n`;
+            if (orderType === 'delivery' && address) text += `*Dirección:* ${address}\n`;
+            text += `------------------------------------\n`;
+            text += `*Detalle del Pedido:*\n`;
+
+            let subtotal = 0;
+            cart.forEach((item, i) => {
+                const itemTotal = item.basePrice * item.qty;
+                subtotal += itemTotal;
+                text += `${i + 1}. x${item.qty} *${item.title}* (Q${itemTotal.toFixed(2)})\n`;
+                if (item.milk) text += `   • Leche: ${item.milk}\n`;
+                text += `   • Dulzor: ${item.sweetness}\n`;
+                if (item.notes) text += `   • Nota: ${item.notes}\n`;
+            });
+
+            const deliveryFee = orderType === 'delivery' ? 30.00 : 0.00;
+            const total = subtotal + deliveryFee;
+
+            text += `------------------------------------\n`;
+            if (orderType === 'delivery') text += `*Envío:* Q${deliveryFee.toFixed(2)}\n`;
+            text += `*TOTAL A PAGAR:* Q${total.toFixed(2)}\n\n`;
+            text += `¡Muchas gracias! Quedo a la espera de la confirmación.`;
+
+            const encoded = encodeURIComponent(text);
+            window.open(`https://wa.me/50255551234?text=${encoded}`, '_blank');
+        }
+
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Initial Load
+        window.onload = function() {
+            renderMenu();
+        };
+    </script>
+</body>
+</html>
