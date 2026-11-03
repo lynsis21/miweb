@@ -1,0 +1,1002 @@
+<title>Planta de Reciclaje Automatizada</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Concepto: tablero de control de planta. Escenario 3D a la izquierda, árbol de decisión y contadores a la derecha, controles bajo el escenario, tabla del árbol al final. */
+:root {
+  --bg: #edf0ec;
+  --surface: #f8faf7;
+  --chip: #e4eae5;
+  --ink: #14211b;
+  --muted: #566860;
+  --line: #cbd5ce;
+  --line2: #9db0a5;
+  --accent: #0e6b50;
+  --on-accent: #ffffff;
+  --scene: #dde5df;
+  --floor: #c3cec6;
+  --f-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --f-body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1512;
+    --surface: #16201b;
+    --chip: #1e2b25;
+    --ink: #e5eee8;
+    --muted: #93a89d;
+    --line: #2a3932;
+    --line2: #4b6358;
+    --accent: #4cc59a;
+    --on-accent: #06251a;
+    --scene: #101915;
+    --floor: #1c2823;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1512;
+  --surface: #16201b;
+  --chip: #1e2b25;
+  --ink: #e5eee8;
+  --muted: #93a89d;
+  --line: #2a3932;
+  --line2: #4b6358;
+  --accent: #4cc59a;
+  --on-accent: #06251a;
+  --scene: #101915;
+  --floor: #1c2823;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 15px;
+  line-height: 1.5;
+}
+.wrap {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding-block: 22px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+.top { display: flex; flex-wrap: wrap; gap: 8px 40px; align-items: flex-end; justify-content: space-between; margin-bottom: 18px; }
+.top > div { min-width: 0; }
+.eyebrow { margin: 0 0 4px; font: 500 12px var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { margin: 0; font: 700 clamp(34px, 6vw, 54px)/1 var(--f-display); letter-spacing: .01em; text-transform: uppercase; text-wrap: balance; }
+.lede { margin: 0; max-width: 52ch; color: var(--muted); }
+
+.main { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 20px; align-items: start; }
+.left, .side { min-width: 0; }
+@media (max-width: 960px) { .main { grid-template-columns: minmax(0, 1fr); } }
+
+.stage {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  min-height: 320px;
+  background: var(--scene);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+@media (max-width: 600px) { .stage { aspect-ratio: 4 / 5; min-height: 380px; } }
+.stage canvas { display: block; width: 100%; height: 100%; touch-action: pan-y; cursor: grab; }
+.stage canvas:active { cursor: grabbing; }
+.hud { position: absolute; left: 10px; top: 10px; display: flex; flex-wrap: wrap; gap: 6px; pointer-events: none; }
+.hud span {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 3px 9px;
+  font: 500 12px var(--f-mono);
+  color: var(--ink);
+}
+.hud b { font-weight: 500; color: var(--accent); }
+.hint {
+  position: absolute; left: 10px; bottom: 10px; margin: 0; pointer-events: none;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 4px;
+  padding: 3px 9px; font: 400 12px var(--f-body); color: var(--muted);
+}
+.nogl { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; color: var(--muted); }
+
+.controls { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin-top: 12px; }
+.group { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.lbl { font: 500 12px var(--f-mono); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.btn, .chip-btn {
+  font: 500 14px var(--f-body);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line2);
+  border-radius: 4px;
+  padding: 8px 14px;
+  min-height: 40px;
+  cursor: pointer;
+}
+.btn:hover, .chip-btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn[aria-pressed="true"] { border-color: var(--accent); background: var(--chip); }
+.btn:focus-visible, .chip-btn:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip-btn { display: inline-flex; align-items: center; gap: 7px; padding: 6px 11px; min-height: 36px; font-size: 13px; }
+.chip-btn i { width: 11px; height: 11px; border-radius: 50%; display: inline-block; border: 1px solid rgba(0,0,0,.25); }
+input[type="range"] { accent-color: var(--accent); width: 120px; }
+output { font: 500 13px var(--f-mono); min-width: 3ch; }
+.check { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font-size: 14px; }
+.check input { width: 18px; height: 18px; accent-color: var(--accent); }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px 16px; }
+.panel + .panel { margin-top: 16px; }
+h2 { margin: 0 0 10px; font: 500 12px var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.tree { display: block; width: 100%; max-width: 400px; height: auto; margin: 0 auto; }
+.tree text { font-family: var(--f-body); fill: var(--ink); }
+.tree .node { fill: var(--surface); stroke: var(--line2); stroke-width: 1.5; }
+.tree .node.on { fill: var(--chip); stroke: var(--accent); stroke-width: 2.5; }
+.tree .edge { fill: none; stroke: var(--line2); stroke-width: 1.5; }
+.tree .edge.on { stroke: var(--accent); stroke-width: 3; }
+.tree .elabel { font: 600 11px var(--f-mono); fill: var(--muted); }
+.tree .elabel.on { fill: var(--accent); }
+.tree .q { font-size: 13.5px; font-weight: 600; }
+.tree .sensor { font: 400 10.5px var(--f-mono); fill: var(--muted); }
+.tree .leaf rect { fill: var(--chip); stroke-width: 2; }
+.tree .leaf text { font-size: 12.5px; font-weight: 600; }
+.tree .root { font: 500 10px var(--f-mono); fill: var(--muted); letter-spacing: .08em; }
+.decision { margin: 12px 0 0; padding-top: 12px; border-top: 1px solid var(--line); font-size: 14px; min-height: 4.6em; }
+.decision .s { color: var(--accent); font-weight: 600; }
+.decision .n { color: var(--muted); font-weight: 600; }
+.decision strong { font-weight: 600; }
+
+.bins { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.bins li { display: grid; grid-template-columns: 14px 1fr auto; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.bins .dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(0,0,0,.25); }
+.bins .v { font: 500 15px var(--f-mono); font-variant-numeric: tabular-nums; }
+.sum { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0 0; }
+.sum div { min-width: 0; }
+.sum dt { font: 500 11px var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.sum dd { margin: 2px 0 0; font: 700 30px/1 var(--f-display); font-variant-numeric: tabular-nums; }
+
+.math { margin-top: 28px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px 40px; }
+@media (max-width: 800px) { .math { grid-template-columns: minmax(0, 1fr); } }
+.math h2 { margin-bottom: 12px; }
+.math p { margin: 0 0 12px; max-width: 62ch; }
+.facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 0 0 16px; }
+.facts div { border-top: 2px solid var(--accent); padding-top: 6px; }
+.facts dt { font: 500 11px var(--f-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.facts dd { margin: 2px 0 0; font: 700 32px/1 var(--f-display); }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font: 500 11px var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+td.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+td .dot { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: 8px; vertical-align: -1px; border: 1px solid rgba(0,0,0,.25); }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <p class="eyebrow">Matemática Discreta · Proyecto de árboles</p>
+      <h1>Planta de reciclaje automatizada</h1>
+    </div>
+    <p class="lede">Echa residuos en la tolva. La banda los lleva por cinco sensores y cada sensor responde sí o no. Esas respuestas forman un árbol binario de decisión.</p>
+  </header>
+
+  <div class="main">
+    <section class="left" aria-label="Simulación 3D">
+      <div class="stage" id="stage">
+        <canvas id="c" role="img" aria-label="Planta de reciclaje en 3D con banda transportadora, sensores y seis contenedores"></canvas>
+        <div class="hud"><span>En la banda <b id="onBelt">0</b></span><span id="pausedTag" hidden>En pausa</span></div>
+        <p class="hint">Arrastra para girar · rueda o pellizco para acercar</p>
+      </div>
+      <div class="controls">
+        <div class="group">
+          <button class="btn primary" id="btnRandom" type="button">Echar basura</button>
+          <button class="btn" id="btnPlay" type="button" aria-pressed="false">Pausar</button>
+        </div>
+        <div class="group">
+          <span class="lbl">Echar</span>
+          <div class="chips" id="dropChips"></div>
+        </div>
+        <div class="group">
+          <label class="lbl" for="speed">Velocidad</label>
+          <input id="speed" type="range" min="0.5" max="3" step="0.25" value="1">
+          <output id="speedVal" for="speed">1×</output>
+        </div>
+        <label class="check"><input id="auto" type="checkbox" checked> Automático</label>
+        <div class="group">
+          <span class="lbl">Vista</span>
+          <button class="btn" type="button" data-view="persp">Perspectiva</button>
+          <button class="btn" type="button" data-view="top">Planta</button>
+          <button class="btn" type="button" data-view="side">Lateral</button>
+        </div>
+        <button class="btn" id="btnReset" type="button">Reiniciar conteo</button>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="panel" aria-label="Árbol de decisión">
+        <h2>Árbol de decisión</h2>
+        <svg id="tree" class="tree" viewBox="0 0 360 480" role="img" aria-label="Árbol binario con cinco preguntas y seis destinos"></svg>
+        <p class="decision" id="decision">Echa un residuo para ver su recorrido por el árbol.</p>
+      </section>
+      <section class="panel" aria-label="Contenedores">
+        <h2>Contenedores</h2>
+        <ul class="bins" id="bins"></ul>
+        <dl class="sum">
+          <div><dt>Procesados</dt><dd id="total">0</dd></div>
+          <div><dt>Preguntas promedio</dt><dd id="avg">0.0</dd></div>
+        </dl>
+      </section>
+    </aside>
+  </div>
+
+  <section class="math" aria-label="El árbol en números">
+    <div>
+      <h2>El árbol en números</h2>
+      <dl class="facts">
+        <div><dt>Nodos internos</dt><dd>5</dd></div>
+        <div><dt>Hojas</dt><dd>6</dd></div>
+        <div><dt>Altura</dt><dd>5</dd></div>
+        <div><dt>Nodos totales</dt><dd>11</dd></div>
+      </dl>
+      <p>Cada pregunta es un nodo interno con dos hijos: la respuesta Sí y la respuesta No. Por eso es un árbol binario lleno, y en esos árboles las hojas son siempre una más que los nodos internos: 5 + 1 = 6.</p>
+      <p>Las hojas son los seis destinos. El peor caso son 5 preguntas, para papel y para rechazo. El mejor caso es 1 pregunta, para orgánico. Poner primero el sensor del material más frecuente baja el promedio de preguntas.</p>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Destino</th><th>Preguntas</th><th>Respuestas</th></tr></thead>
+        <tbody id="mathRows"></tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- Datos del árbol ---------- */
+  var STATIONS = [
+    { key: 'organico', name: 'Orgánico',       q: '¿Es orgánico?',        sensor: 'Sensor NIR y humedad', css: '#8b5e34', side:  1, x: -6.5 },
+    { key: 'metal',    name: 'Metal',          q: '¿Es metálico?',        sensor: 'Sensor inductivo',     css: '#8d99a6', side: -1, x: -3.2 },
+    { key: 'vidrio',   name: 'Vidrio',         q: '¿Es vidrio?',          sensor: 'Cámara óptica',        css: '#2e9e6b', side:  1, x:  0.1 },
+    { key: 'plastico', name: 'Plástico',       q: '¿Es plástico?',        sensor: 'Espectrómetro NIR',    css: '#e2b320', side: -1, x:  3.4 },
+    { key: 'papel',    name: 'Papel y cartón', q: '¿Es papel o cartón?',  sensor: 'Cámara RGB',           css: '#3b7bd0', side:  1, x:  6.7 }
+  ];
+  var REJECT = { key: 'rechazo', name: 'Rechazo', css: '#565d66' };
+  var CATS = {};
+  STATIONS.forEach(function (s, i) { CATS[s.key] = s; s.depth = i + 1; });
+  CATS.rechazo = REJECT; REJECT.depth = 5;
+  var CAT_KEYS = ['organico', 'metal', 'vidrio', 'plastico', 'papel', 'rechazo'];
+
+  var BELT_Y = 1.6, BELT_X0 = -11.5, BELT_X1 = 11, BELT_W = 2.1, SPEED = 2.2, GATE_OFF = 1.0, SPAWN_X = -10;
+
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function isLight(css) {
+    var n = parseInt(css.slice(1), 16), r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+    return (0.299 * r + 0.587 * g + 0.114 * b) > 150;
+  }
+
+  /* ---------- Textos y tabla ---------- */
+  var rows = document.getElementById('mathRows');
+  CAT_KEYS.forEach(function (k) {
+    var c = CATS[k], resp = [], i;
+    var steps = k === 'rechazo' ? 5 : c.depth;
+    for (i = 0; i < steps; i++) resp.push('No');
+    if (k !== 'rechazo') resp[steps - 1] = 'Sí';
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td><span class="dot" style="background:' + c.css + '"></span>' + c.name + '</td><td class="num">' + steps + '</td><td class="num">' + resp.join(', ') + '</td>';
+    rows.appendChild(tr);
+  });
+
+  var binsEl = document.getElementById('bins');
+  var binRows = {};
+  CAT_KEYS.forEach(function (k) {
+    var li = document.createElement('li');
+    li.innerHTML = '<span class="dot" style="background:' + CATS[k].css + '"></span><span>' + CATS[k].name + '</span><span class="v">0</span>';
+    binsEl.appendChild(li);
+    binRows[k] = li.querySelector('.v');
+  });
+
+  var chipsEl = document.getElementById('dropChips');
+  CAT_KEYS.forEach(function (k) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'chip-btn'; b.setAttribute('data-cat', k);
+    b.innerHTML = '<i style="background:' + CATS[k].css + '"></i>' + CATS[k].name.replace(' y cartón', '');
+    chipsEl.appendChild(b);
+  });
+
+  /* ---------- Árbol SVG ---------- */
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(name, attrs, parent, text) {
+    var e = document.createElementNS(NS, name);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  var T = { nodes: [], yes: [], yesL: [], no: [], noL: [], leaves: [], rej: null };
+  (function buildTree() {
+    var svg = document.getElementById('tree');
+    var y0 = 34, dy = 84, nx = 24, nw = 156, nh = 46, lx = 244, lw = 108;
+    el('text', { x: nx, y: 22, 'class': 'root' }, svg, 'RAÍZ');
+    STATIONS.forEach(function (s, i) {
+      var ty = y0 + i * dy, cy = ty + nh / 2;
+      T.yes[i] = el('path', { d: 'M' + (nx + nw) + ' ' + cy + 'H' + lx, 'class': 'edge' }, svg);
+      T.yesL[i] = el('text', { x: (nx + nw + lx) / 2, y: cy - 7, 'text-anchor': 'middle', 'class': 'elabel' }, svg, 'Sí');
+      var endY = i < 4 ? ty + dy : ty + nh + 24;
+      T.no[i] = el('path', { d: 'M' + (nx + nw / 2) + ' ' + (ty + nh) + 'V' + endY, 'class': 'edge' }, svg);
+      T.noL[i] = el('text', { x: nx + nw / 2 + 9, y: ty + nh + (endY - ty - nh) / 2 + 4, 'class': 'elabel' }, svg, 'No');
+    });
+    STATIONS.forEach(function (s, i) {
+      var ty = y0 + i * dy, cy = ty + nh / 2;
+      T.nodes[i] = el('rect', { x: nx, y: ty, width: nw, height: nh, rx: 4, 'class': 'node' }, svg);
+      el('text', { x: nx + 11, y: ty + 20, 'class': 'q' }, svg, s.q);
+      el('text', { x: nx + 11, y: ty + 36, 'class': 'sensor' }, svg, s.sensor);
+      var g = el('g', { 'class': 'leaf' }, svg);
+      var r = el('rect', { x: lx, y: cy - 16, width: lw, height: 32, rx: 16 }, g);
+      r.style.stroke = s.css;
+      var t = el('text', { x: lx + lw / 2, y: cy + 4.5, 'text-anchor': 'middle' }, g, s.name.replace(' y cartón', ''));
+      T.leaves[i] = { rect: r, text: t, css: s.css };
+    });
+    var ry = y0 + 4 * dy + nh + 24;
+    var gr = el('g', { 'class': 'leaf' }, svg);
+    var rr = el('rect', { x: nx, y: ry, width: nw, height: 32, rx: 16 }, gr);
+    rr.style.stroke = REJECT.css;
+    var rt = el('text', { x: nx + nw / 2, y: ry + 20.5, 'text-anchor': 'middle' }, gr, 'Rechazo');
+    T.rej = { rect: rr, text: rt, css: REJECT.css };
+  })();
+
+  function leafOn(L) {
+    L.rect.style.fill = L.css;
+    L.text.style.fill = isLight(L.css) ? '#14211b' : '#ffffff';
+  }
+  function leafOff(L) { L.rect.style.fill = ''; L.text.style.fill = ''; }
+
+  var decisionEl = document.getElementById('decision');
+  function paintTree(it) {
+    var i;
+    for (i = 0; i < 5; i++) {
+      T.nodes[i].classList.remove('on');
+      T.yes[i].classList.remove('on'); T.yesL[i].classList.remove('on');
+      T.no[i].classList.remove('on'); T.noL[i].classList.remove('on');
+      leafOff(T.leaves[i]);
+    }
+    leafOff(T.rej);
+    if (!it) return;
+    var html = '<strong>' + it.spec.name + '</strong>: ';
+    var parts = [];
+    it.path.forEach(function (p) {
+      T.nodes[p.i].classList.add('on');
+      if (p.yes) {
+        T.yes[p.i].classList.add('on'); T.yesL[p.i].classList.add('on'); leafOn(T.leaves[p.i]);
+      } else {
+        T.no[p.i].classList.add('on'); T.noL[p.i].classList.add('on');
+        if (p.i === 4) leafOn(T.rej);
+      }
+      parts.push(STATIONS[p.i].q + ' <span class="' + (p.yes ? 's' : 'n') + '">' + (p.yes ? 'Sí' : 'No') + '</span>');
+    });
+    var last = it.path[it.path.length - 1];
+    var decided = last && (last.yes || it.path.length === 5);
+    html += parts.join(' → ');
+    if (decided) html += ' → <strong>' + CATS[it.cat].name + '</strong>'; else html += ' …';
+    decisionEl.innerHTML = html;
+  }
+
+  /* ---------- Estado de conteo ---------- */
+  var counts = {}, totalQ = 0, totalN = 0;
+  function resetCounts() {
+    CAT_KEYS.forEach(function (k) { counts[k] = 0; binRows[k].textContent = '0'; });
+    totalQ = 0; totalN = 0; updateStats();
+    bins.forEach(function (b) { b.level = 0; });
+  }
+  function updateStats() {
+    document.getElementById('total').textContent = totalN;
+    document.getElementById('avg').textContent = totalN ? (totalQ / totalN).toFixed(1) : '0.0';
+  }
+
+  /* ---------- Three.js ---------- */
+  var stage = document.getElementById('stage');
+  var canvas = document.getElementById('c');
+  var renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+  } catch (e) {
+    var msg = document.createElement('div');
+    msg.className = 'nogl';
+    msg.textContent = 'Tu navegador no pudo iniciar WebGL, así que la vista 3D no está disponible. El árbol y la tabla siguen funcionando.';
+    stage.appendChild(msg);
+    return;
+  }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(42, 1, 0.1, 200);
+
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x8899a0, 0.9));
+  var sun = new THREE.DirectionalLight(0xffffff, 0.8);
+  sun.position.set(-8, 18, 10);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(2048, 2048);
+  var sc = sun.shadow.camera;
+  sc.left = -20; sc.right = 20; sc.top = 12; sc.bottom = -12; sc.near = 1; sc.far = 50;
+  sun.shadow.bias = -0.0005;
+  scene.add(sun);
+
+  function mat(color, o) {
+    return new THREE.MeshStandardMaterial(Object.assign({ color: color, roughness: 0.6, metalness: 0.1 }, o || {}));
+  }
+  function box(w, h, d, m, x, y, z, parent) {
+    var mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
+    mesh.position.set(x, y, z);
+    mesh.castShadow = true; mesh.receiveShadow = true;
+    (parent || scene).add(mesh);
+    return mesh;
+  }
+  function cyl(rt, rb, h, s) { return new THREE.CylinderGeometry(rt, rb, h, s || 20); }
+
+  var steel = mat(0x7d8993, { metalness: 0.5, roughness: 0.45 });
+  var darkSteel = mat(0x3a424a, { metalness: 0.4, roughness: 0.55 });
+  var floorMat = mat(0xc3cec6, { roughness: 0.95, metalness: 0 });
+
+  /* Piso */
+  var floor = box(36, 0.3, 17, floorMat, 0.8, -0.15, 0);
+  floor.castShadow = false;
+
+  /* Banda */
+  var beltLen = BELT_X1 - BELT_X0, beltCx = (BELT_X0 + BELT_X1) / 2;
+  (function () {
+    var bt = document.createElement('canvas'); bt.width = 64; bt.height = 64;
+    var g = bt.getContext('2d');
+    g.fillStyle = '#262b30'; g.fillRect(0, 0, 64, 64);
+    g.fillStyle = '#3d444c'; g.fillRect(0, 0, 6, 64);
+    window.__beltTex = new THREE.CanvasTexture(bt);
+  })();
+  var beltTex = window.__beltTex;
+  beltTex.wrapS = beltTex.wrapT = THREE.RepeatWrapping;
+  beltTex.repeat.set(beltLen / 0.7, 1);
+  var beltTop = new THREE.Mesh(new THREE.PlaneGeometry(beltLen, BELT_W), new THREE.MeshStandardMaterial({ map: beltTex, roughness: 0.9, metalness: 0 }));
+  beltTop.rotation.x = -Math.PI / 2;
+  beltTop.position.set(beltCx, BELT_Y + 0.01, 0);
+  beltTop.receiveShadow = true;
+  scene.add(beltTop);
+  box(beltLen, 0.2, BELT_W, mat(0x20252a), beltCx, BELT_Y - 0.1, 0);
+  [-1, 1].forEach(function (s) {
+    box(beltLen, 0.3, 0.14, steel, beltCx, BELT_Y - 0.15, s * (BELT_W / 2 + 0.07));
+  });
+  [-10.5, -8.5, -4.85, -1.55, 1.75, 5.05, 8.4, 10.3].forEach(function (x) {
+    [-1, 1].forEach(function (s) {
+      box(0.15, BELT_Y - 0.3, 0.15, darkSteel, x, (BELT_Y - 0.3) / 2, s * (BELT_W / 2 + 0.07));
+    });
+    box(0.12, 0.12, BELT_W + 0.3, darkSteel, x, 0.6, 0);
+  });
+  [BELT_X0, BELT_X1].forEach(function (x) {
+    var r = new THREE.Mesh(cyl(0.14, 0.14, BELT_W + 0.1, 16), steel);
+    r.rotation.x = Math.PI / 2; r.position.set(x, BELT_Y - 0.1, 0); r.castShadow = true;
+    scene.add(r);
+  });
+
+  /* Sprites con texto */
+  function label(text, bg, fg, w, h, font) {
+    var c = document.createElement('canvas'); c.width = w; c.height = h;
+    var g = c.getContext('2d'), r = h * 0.28;
+    g.fillStyle = bg;
+    g.beginPath();
+    g.moveTo(4 + r, 4); g.arcTo(w - 4, 4, w - 4, h - 4, r); g.arcTo(w - 4, h - 4, 4, h - 4, r);
+    g.arcTo(4, h - 4, 4, 4, r); g.arcTo(4, 4, w - 4, 4, r); g.closePath(); g.fill();
+    g.fillStyle = fg; g.font = '600 ' + font + 'px "IBM Plex Sans", Arial, sans-serif';
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(text, w / 2, h / 2 + 3);
+    var tex = new THREE.CanvasTexture(c); tex.anisotropy = 4;
+    var s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
+    s.renderOrder = 10;
+    return s;
+  }
+
+  /* Tolva */
+  (function () {
+    var hop = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 0.6, 1.5, 4, 1, true), new THREE.MeshStandardMaterial({ color: 0x8a96a1, metalness: 0.5, roughness: 0.45, side: THREE.DoubleSide }));
+    hop.rotation.y = Math.PI / 4; hop.position.set(SPAWN_X, 3.6, 0); hop.castShadow = true;
+    scene.add(hop);
+    [[-1, -1], [-1, 1], [1, -1], [1, 1]].forEach(function (p) {
+      box(0.14, 2.9, 0.14, darkSteel, SPAWN_X + p[0] * 1.05, 1.45, p[1] * 1.05);
+    });
+    var l = label('Entrada de basura', '#1b2621', '#ffffff', 512, 128, 56);
+    l.scale.set(3.4, 0.85, 1); l.position.set(SPAWN_X, 5.2, 0);
+    scene.add(l);
+  })();
+
+  /* Tablero de control */
+  (function () {
+    box(1.6, 2.4, 0.8, darkSteel, -1.6, 1.2, -6.4);
+    var scr = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.7), new THREE.MeshBasicMaterial({ color: 0x3ddc97 }));
+    scr.position.set(-1.6, 1.7, -5.99); scene.add(scr);
+    var lamp = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 8), new THREE.MeshBasicMaterial({ color: 0xffc94a }));
+    lamp.position.set(-1.9, 1.05, -5.99); scene.add(lamp);
+    var lamp2 = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 8), new THREE.MeshBasicMaterial({ color: 0x3ddc97 }));
+    lamp2.position.set(-1.6, 1.05, -5.99); scene.add(lamp2);
+  })();
+
+  /* Compuertas con sensor, empujadores, rampas y contenedores */
+  var AMBER = new THREE.Color(0xffc94a), GREEN = new THREE.Color(0x3ddc97), RED = new THREE.Color(0xff5a4d);
+  var gates = [], pushers = [], bins = [];
+
+  function makeBin(cx, cz, w, d, cat) {
+    var col = new THREE.Color(cat.css);
+    var wm = new THREE.MeshStandardMaterial({ color: col, transparent: true, opacity: 0.42, roughness: 0.4, depthWrite: false });
+    var H = 1.1, t = 0.08;
+    box(w, 0.1, d, mat(col.getHex(), { roughness: 0.6 }), cx, 0.05, cz);
+    [[0, -d / 2, w, t], [0, d / 2, w, t]].forEach(function (p) {
+      var m = new THREE.Mesh(new THREE.BoxGeometry(p[2], H, p[3]), wm); m.position.set(cx + p[0], H / 2, cz + p[1]); scene.add(m);
+    });
+    [[-w / 2, 0], [w / 2, 0]].forEach(function (p) {
+      var m = new THREE.Mesh(new THREE.BoxGeometry(t, H, d), wm); m.position.set(cx + p[0], H / 2, cz); scene.add(m);
+    });
+    [[-1, -1], [-1, 1], [1, -1], [1, 1]].forEach(function (p) {
+      box(0.1, H + 0.04, 0.1, mat(col.getHex(), { roughness: 0.5 }), cx + p[0] * w / 2, H / 2, cz + p[1] * d / 2);
+    });
+    var fm = new THREE.MeshStandardMaterial({ color: col, roughness: 0.9 });
+    var fill = new THREE.Mesh(new THREE.BoxGeometry(w - 0.2, 1, d - 0.2), fm);
+    fill.position.set(cx, 0.1, cz); fill.scale.y = 0.001; fill.castShadow = true;
+    scene.add(fill);
+    var lab = label(cat.name, cat.css, isLight(cat.css) ? '#14211b' : '#ffffff', 512, 128, 62);
+    lab.scale.set(3.0, 0.75, 1); lab.position.set(cx, 2.15, cz);
+    scene.add(lab);
+    var b = { fill: fill, level: 0, key: cat.key, y0: 0.1 };
+    bins.push(b);
+    return b;
+  }
+
+  STATIONS.forEach(function (st, i) {
+    var side = st.side, sx = st.x, gx = sx - GATE_OFF;
+
+    /* Compuerta del sensor */
+    [-1, 1].forEach(function (s) { box(0.12, 1.9, 0.12, darkSteel, gx, BELT_Y + 0.95, s * 1.2); });
+    box(0.22, 0.16, 2.6, darkSteel, gx, BELT_Y + 1.9, 0);
+    var lampMat = new THREE.MeshBasicMaterial({ color: 0xffc94a });
+    var lamp = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.1, 0.5), lampMat);
+    lamp.position.set(gx, BELT_Y + 1.78, 0); scene.add(lamp);
+    var beamMat = new THREE.MeshBasicMaterial({ color: 0xffc94a, transparent: true, opacity: 0.1, side: THREE.DoubleSide, depthWrite: false });
+    var beam = new THREE.Mesh(new THREE.PlaneGeometry(BELT_W, 1.5), beamMat);
+    beam.rotation.y = Math.PI / 2; beam.position.set(gx, BELT_Y + 0.78, 0);
+    scene.add(beam);
+    var gl = label(st.q, '#1b2621', '#ffffff', 512, 112, 52);
+    gl.scale.set(2.5, 0.55, 1); gl.position.set(gx, BELT_Y + 2.55, 0);
+    scene.add(gl);
+    gates.push({ x: gx, beamMat: beamMat, lampMat: lampMat, flash: 0, col: new THREE.Color() });
+
+    /* Empujador */
+    var hz = -side * 2.1;
+    box(0.55, 0.55, 0.7, darkSteel, sx, BELT_Y + 0.3, hz);
+    box(0.3, BELT_Y + 0.05, 0.3, darkSteel, sx, (BELT_Y + 0.05) / 2, hz);
+    var rod = box(0.12, 0.12, 1, steel, sx, BELT_Y + 0.4, hz);
+    var head = box(0.6, 0.7, 0.14, mat(0xe2b320, { roughness: 0.5 }), sx, BELT_Y + 0.4, -side * 1.45);
+    pushers.push({ side: side, rod: rod, head: head, fireT: -1, ext: 0 });
+
+    /* Rampa */
+    var ang = Math.atan2(0.4, 2.15), len = Math.sqrt(2.15 * 2.15 + 0.4 * 0.4);
+    var cg = new THREE.Group();
+    cg.position.set(sx, 1.35, side * 2.125);
+    cg.rotation.x = side * ang;
+    var cm = mat(0x9aa5ae, { metalness: 0.5, roughness: 0.4 });
+    var plate = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.08, len), cm); plate.receiveShadow = true; plate.castShadow = true; cg.add(plate);
+    [-0.8, 0.8].forEach(function (x) {
+      var w = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.22, len), cm); w.position.set(x, 0.12, 0); w.castShadow = true; cg.add(w);
+    });
+    scene.add(cg);
+
+    /* Contenedor */
+    makeBin(sx, side * 3.9, 1.8, 1.8, st);
+  });
+  makeBin(12.4, 0, 1.8, 2.6, REJECT);
+
+  /* ---------- Residuos ---------- */
+  function P(g, color, o, x, y, z) {
+    var m = new THREE.Mesh(g, new THREE.MeshStandardMaterial(Object.assign({ color: color, roughness: 0.55, metalness: 0.05 }, o || {})));
+    m.position.set(x || 0, y || 0, z || 0); m.castShadow = true;
+    return m;
+  }
+  function bx(w, h, d) { return new THREE.BoxGeometry(w, h, d); }
+  var CLEAR = { transparent: true, opacity: 0.78, roughness: 0.15 };
+  var ITEMS = [
+    { name: 'Botella PET', cat: 'plastico', build: function (g) {
+      g.add(P(cyl(0.2, 0.2, 0.6), 0x9fd3f2, CLEAR, 0, 0.3, 0));
+      g.add(P(cyl(0.08, 0.2, 0.18), 0x9fd3f2, CLEAR, 0, 0.69, 0));
+      g.add(P(cyl(0.085, 0.085, 0.1), 0x2f6fd0, {}, 0, 0.83, 0));
+      g.add(P(cyl(0.205, 0.205, 0.16), 0xf2f2f2, {}, 0, 0.3, 0));
+    } },
+    { name: 'Vaso de plástico', cat: 'plastico', build: function (g) {
+      g.add(P(cyl(0.26, 0.18, 0.32), 0xf4f4f4, {}, 0, 0.16, 0));
+      g.add(P(cyl(0.226, 0.2, 0.1), 0xe0523d, {}, 0, 0.12, 0));
+    } },
+    { name: 'Caja de cartón', cat: 'papel', build: function (g) {
+      g.add(P(bx(0.7, 0.5, 0.55), 0xb98a55, { roughness: 0.9 }, 0, 0.25, 0));
+      g.add(P(bx(0.12, 0.02, 0.57), 0xdcc596, {}, 0, 0.505, 0));
+    } },
+    { name: 'Periódico', cat: 'papel', build: function (g) {
+      g.add(P(bx(0.9, 0.06, 0.65), 0xf0ede4, { roughness: 0.95 }, 0, 0.03, 0));
+      var a = P(bx(0.85, 0.06, 0.62), 0xd9d4c5, { roughness: 0.95 }, 0.02, 0.09, 0.02); a.rotation.y = 0.15; g.add(a);
+      var b = P(bx(0.88, 0.06, 0.64), 0xece8dc, { roughness: 0.95 }, 0, 0.15, 0); b.rotation.y = -0.1; g.add(b);
+      g.add(P(bx(0.6, 0.006, 0.05), 0x555555, {}, -0.05, 0.183, -0.15));
+      g.add(P(bx(0.6, 0.006, 0.05), 0x555555, {}, -0.05, 0.183, 0.0));
+    } },
+    { name: 'Botella de vidrio', cat: 'vidrio', build: function (g) {
+      var o = { transparent: true, opacity: 0.9, roughness: 0.1, metalness: 0.2 };
+      g.add(P(cyl(0.2, 0.2, 0.5), 0x1f7a44, o, 0, 0.25, 0));
+      g.add(P(cyl(0.07, 0.2, 0.2), 0x1f7a44, o, 0, 0.6, 0));
+      g.add(P(cyl(0.07, 0.07, 0.24), 0x1f7a44, o, 0, 0.82, 0));
+      g.add(P(cyl(0.08, 0.08, 0.03), 0xb3b3b3, { metalness: 0.7 }, 0, 0.955, 0));
+    } },
+    { name: 'Frasco de vidrio', cat: 'vidrio', build: function (g) {
+      g.add(P(cyl(0.25, 0.25, 0.45), 0xcfe9f0, { transparent: true, opacity: 0.55, roughness: 0.1 }, 0, 0.225, 0));
+      g.add(P(cyl(0.265, 0.265, 0.08), 0xc9a227, { metalness: 0.6, roughness: 0.35 }, 0, 0.49, 0));
+    } },
+    { name: 'Lata de aluminio', cat: 'metal', build: function (g) {
+      var m = { metalness: 0.85, roughness: 0.25 };
+      g.add(P(cyl(0.17, 0.17, 0.46, 24), 0xc7ced5, m, 0, 0.23, 0));
+      g.add(P(cyl(0.172, 0.172, 0.22, 24), 0x2d6fb3, m, 0, 0.23, 0));
+      g.add(P(cyl(0.15, 0.15, 0.03, 24), 0xa9b0b7, m, 0, 0.475, 0));
+    } },
+    { name: 'Lata de refresco', cat: 'metal', build: function (g) {
+      var m = { metalness: 0.8, roughness: 0.3 };
+      g.add(P(cyl(0.17, 0.17, 0.46, 24), 0xd23a2e, m, 0, 0.23, 0));
+      g.add(P(cyl(0.15, 0.15, 0.03, 24), 0xa9b0b7, m, 0, 0.475, 0));
+    } },
+    { name: 'Manzana', cat: 'organico', build: function (g) {
+      var a = P(new THREE.SphereGeometry(0.24, 16, 12), 0xc8322b, { roughness: 0.35 }, 0, 0.22, 0); a.scale.y = 0.9; g.add(a);
+      g.add(P(cyl(0.015, 0.015, 0.12, 6), 0x5b3a1e, {}, 0, 0.46, 0));
+      var l = P(new THREE.SphereGeometry(0.07, 8, 6), 0x4f9a3a, {}, 0.07, 0.45, 0); l.scale.y = 0.35; g.add(l);
+    } },
+    { name: 'Banano', cat: 'organico', build: function (g) {
+      var t = P(new THREE.TorusGeometry(0.3, 0.075, 8, 18, Math.PI * 0.85), 0xf0cf3a, { roughness: 0.7 }, -0.05, 0.08, 0.1);
+      t.rotation.x = Math.PI / 2; g.add(t);
+    } },
+    { name: 'Lechuga', cat: 'organico', build: function (g) {
+      g.add(P(new THREE.IcosahedronGeometry(0.28, 1), 0x6fae3f, { flatShading: true, roughness: 0.8 }, 0, 0.27, 0));
+    } },
+    { name: 'Bolsa negra', cat: 'rechazo', build: function (g) {
+      var b = P(new THREE.SphereGeometry(0.3, 14, 10), 0x1b1c20, { roughness: 0.35 }, 0, 0.24, 0); b.scale.set(1.1, 0.8, 1); g.add(b);
+      g.add(P(new THREE.ConeGeometry(0.08, 0.2, 8), 0x1b1c20, { roughness: 0.35 }, 0, 0.52, 0));
+    } },
+    { name: 'Plato de duroport', cat: 'rechazo', build: function (g) {
+      g.add(P(bx(0.8, 0.3, 0.55), 0xf7f7f2, { roughness: 1 }, 0, 0.15, 0));
+      g.add(P(bx(0.6, 0.02, 0.4), 0xd8d8d2, { roughness: 1 }, 0, 0.305, 0));
+    } },
+    { name: 'Bolsa de snacks', cat: 'rechazo', build: function (g) {
+      g.add(P(bx(0.55, 0.09, 0.75), 0xd0558c, { metalness: 0.6, roughness: 0.3 }, 0, 0.045, 0));
+      g.add(P(bx(0.4, 0.095, 0.18), 0xf2c14e, { metalness: 0.4, roughness: 0.4 }, 0, 0.047, 0));
+    } }
+  ];
+
+  var items = [];
+  var queue = [];
+  var focus = null;
+
+  function pickSpec(cat) {
+    var k = cat || CAT_KEYS[Math.floor(Math.random() * CAT_KEYS.length)];
+    var pool = ITEMS.filter(function (s) { return s.cat === k; });
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+  function makeItem(cat, x, y, state) {
+    var spec = pickSpec(cat);
+    var g = new THREE.Group();
+    spec.build(g);
+    g.rotation.y = (Math.random() - 0.5) * 1.2;
+    scene.add(g);
+    var it = {
+      spec: spec, cat: spec.cat, mesh: g, x: x, y: y, z: (Math.random() - 0.5) * 0.3,
+      state: state, nextStation: 0, pushAt: null, path: [], t: 0, vy: 0, side: 0, target: -1,
+      spin: (Math.random() < 0.5 ? -1 : 1) * (3 + Math.random() * 3)
+    };
+    it.z0 = it.z;
+    items.push(it);
+    return it;
+  }
+  function removeItem(it) {
+    scene.remove(it.mesh);
+    it.mesh.traverse(function (o) {
+      if (o.geometry) o.geometry.dispose();
+      if (o.material) o.material.dispose();
+    });
+    var i = items.indexOf(it);
+    if (i >= 0) items.splice(i, 1);
+    if (focus === it) { /* se conserva el último recorrido en el panel */ }
+  }
+
+  function enqueue(cat) { if (queue.length < 8) queue.push(cat || null); }
+  function trySpawn() {
+    if (!queue.length || items.length >= 14) return;
+    for (var i = 0; i < items.length; i++) {
+      var it = items[i];
+      if (it.state === 'drop' || (it.state === 'belt' && it.x < SPAWN_X + 2.3)) return;
+    }
+    makeItem(queue.shift(), SPAWN_X, 3.1, 'drop');
+  }
+
+  function flashGate(i, yes) {
+    var g = gates[i];
+    g.flash = 0.7; g.col.copy(yes ? GREEN : RED);
+  }
+  function setFocus(it) { focus = it; paintTree(it); }
+
+  function finishCount(it, key) {
+    counts[key]++;
+    binRows[key].textContent = counts[key];
+    totalN++; totalQ += CATS[key].depth;
+    updateStats();
+    for (var i = 0; i < bins.length; i++) {
+      if (bins[i].key === key) { bins[i].level = Math.min(counts[key], 14) / 14 * 0.9; break; }
+    }
+  }
+
+  function checkSensors(it) {
+    if (it.nextStation < STATIONS.length) {
+      var st = STATIONS[it.nextStation];
+      if (it.x >= st.x - GATE_OFF) {
+        var yes = it.cat === st.key;
+        it.path.push({ i: it.nextStation, yes: yes });
+        flashGate(it.nextStation, yes);
+        setFocus(it);
+        if (yes) { it.pushAt = st.x - 0.1; it.target = it.nextStation; it.nextStation = Infinity; }
+        else it.nextStation++;
+      }
+    }
+    if (it.pushAt !== null && it.x >= it.pushAt) {
+      it.state = 'push'; it.t = 0; it.side = STATIONS[it.target].side; it.pushAt = null;
+      pushers[it.target].fireT = 0;
+    }
+    if (it.nextStation === STATIONS.length && it.x >= BELT_X1) {
+      it.state = 'fall'; it.t = 0; it.vy = 0;
+    }
+  }
+
+  function updateItem(it, dt) {
+    var k, u, z, y;
+    switch (it.state) {
+      case 'drop':
+        it.vy += 12 * dt; it.y -= it.vy * dt;
+        if (it.y <= BELT_Y) { it.y = BELT_Y; it.state = 'belt'; }
+        break;
+      case 'belt':
+        it.x += SPEED * dt;
+        checkSensors(it);
+        break;
+      case 'push':
+        it.t += dt;
+        it.x += SPEED * (1 - clamp(it.t / 0.5, 0, 1)) * dt;
+        u = clamp((it.t - 0.18) / 1.1, 0, 1);
+        if (u < 0.7) {
+          k = Math.pow(u / 0.7, 1.25);
+          z = 0.15 + 3.05 * k;
+          y = z < 1.05 ? BELT_Y : (1.56 - 0.41 * (z - 1.05) / 2.15);
+        } else {
+          k = (u - 0.7) / 0.3;
+          z = 3.2 + 0.55 * k;
+          y = 1.15 - 0.65 * k * k;
+          it.mesh.rotation.x += it.spin * dt * 0.4;
+        }
+        it.z = it.side * z + it.z0 * (1 - Math.min(u * 3, 1));
+        it.y = y;
+        if (u >= 1) {
+          it.state = 'sink'; it.t = 0;
+          finishCount(it, STATIONS[it.target].key);
+        }
+        break;
+      case 'fall':
+        it.vy += 12 * dt; it.y -= it.vy * dt;
+        it.x += SPEED * 0.8 * dt;
+        it.mesh.rotation.z += it.spin * dt * 0.3;
+        if (it.y <= 0.5) { it.y = 0.5; it.state = 'sink'; it.t = 0; finishCount(it, 'rechazo'); }
+        break;
+      case 'sink':
+        it.t += dt;
+        var s = 1 - clamp((it.t - 0.05) / 0.35, 0, 1);
+        it.mesh.scale.setScalar(Math.max(s, 0.001));
+        if (it.t >= 0.4) { removeItem(it); return; }
+        break;
+    }
+    it.mesh.position.set(it.x, it.y, it.z);
+  }
+
+  function updatePushers(dt) {
+    pushers.forEach(function (p) {
+      if (p.fireT >= 0) {
+        p.fireT += dt;
+        p.ext = Math.sin(Math.PI * Math.min(p.fireT / 0.8, 1));
+        if (p.fireT >= 0.8) { p.fireT = -1; p.ext = 0; }
+      }
+      var hz = -p.side * 1.45 + p.side * 1.8 * p.ext;
+      p.head.position.z = hz;
+      var a = -p.side * 1.75, b = hz - p.side * 0.07;
+      p.rod.scale.z = Math.abs(b - a);
+      p.rod.position.z = (a + b) / 2;
+    });
+  }
+
+  function updateGates(dt) {
+    gates.forEach(function (g) {
+      var scanning = false, i;
+      for (i = 0; i < items.length; i++) {
+        if (items[i].state === 'belt' && Math.abs(items[i].x - g.x) < 0.8) { scanning = true; break; }
+      }
+      var col = AMBER, op = 0.1;
+      if (g.flash > 0) { g.flash -= dt; col = g.col; op = 0.42; }
+      else if (scanning) { op = 0.3; }
+      g.beamMat.color.copy(col); g.beamMat.opacity = op;
+      g.lampMat.color.copy(col);
+    });
+  }
+
+  function updateBins() {
+    bins.forEach(function (b) {
+      var cur = b.fill.scale.y, target = Math.max(b.level, 0.001);
+      var next = cur + (target - cur) * 0.12;
+      b.fill.scale.y = next;
+      b.fill.position.y = b.y0 + next / 2;
+    });
+  }
+
+  /* ---------- Cámara ---------- */
+  var cam = { theta: 0.45, phi: 1.0, r: 24 }, goal = { theta: 0.45, phi: 1.0, r: 24 };
+  var TARGET = new THREE.Vector3(0.8, 1.0, 0);
+  var userMoved = false;
+  function fitR(wide) {
+    var t = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+    return clamp(wide / (2 * t * camera.aspect), 16, 46);
+  }
+  function setPreset(name, snap) {
+    if (name === 'persp') { goal.theta = 0.45; goal.phi = 1.0; goal.r = fitR(29); }
+    if (name === 'top')   { goal.theta = 0;    goal.phi = 0.05; goal.r = fitR(28); }
+    if (name === 'side')  { goal.theta = 0;    goal.phi = 1.42; goal.r = fitR(28); }
+    if (snap) { cam.theta = goal.theta; cam.phi = goal.phi; cam.r = goal.r; }
+  }
+  function resize() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+    if (!userMoved) setPreset('persp', true);
+  }
+  if (window.ResizeObserver) new ResizeObserver(resize).observe(stage); else window.addEventListener('resize', resize);
+
+  var ptrs = new Map(), pinch0 = 0;
+  function pdist() {
+    var a = Array.from(ptrs.values());
+    return Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y);
+  }
+  canvas.addEventListener('pointerdown', function (e) {
+    try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+    ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (ptrs.size === 2) pinch0 = pdist();
+    userMoved = true;
+  });
+  canvas.addEventListener('pointermove', function (e) {
+    var p = ptrs.get(e.pointerId);
+    if (!p) return;
+    var dx = e.clientX - p.x, dy = e.clientY - p.y;
+    p.x = e.clientX; p.y = e.clientY;
+    if (ptrs.size === 1) {
+      goal.theta -= dx * 0.006;
+      goal.phi = clamp(goal.phi - dy * 0.006, 0.05, 1.5);
+    } else if (ptrs.size === 2) {
+      var d = pdist();
+      if (pinch0) goal.r = clamp(goal.r * pinch0 / d, 8, 48);
+      pinch0 = d;
+    }
+  });
+  ['pointerup', 'pointercancel'].forEach(function (n) {
+    canvas.addEventListener(n, function (e) { ptrs.delete(e.pointerId); pinch0 = 0; });
+  });
+  canvas.addEventListener('wheel', function (e) {
+    e.preventDefault();
+    goal.r = clamp(goal.r * Math.exp(e.deltaY * 0.001), 8, 48);
+    userMoved = true;
+  }, { passive: false });
+
+  /* ---------- Tema ---------- */
+  function readTheme() {
+    var cs = getComputedStyle(document.documentElement);
+    var bg = cs.getPropertyValue('--scene').trim() || '#dde5df';
+    scene.background = new THREE.Color(bg);
+    scene.fog = new THREE.Fog(bg, 42, 95);
+    floorMat.color.set(cs.getPropertyValue('--floor').trim() || '#c3cec6');
+  }
+  readTheme();
+  if (window.matchMedia) {
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    if (mq.addEventListener) mq.addEventListener('change', readTheme);
+  }
+  new MutationObserver(readTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  /* ---------- Controles ---------- */
+  var playing = true, speedMul = 1, auto = true, autoT = 0;
+  var btnPlay = document.getElementById('btnPlay'), pausedTag = document.getElementById('pausedTag');
+  btnPlay.addEventListener('click', function () {
+    playing = !playing;
+    btnPlay.textContent = playing ? 'Pausar' : 'Reanudar';
+    btnPlay.setAttribute('aria-pressed', String(!playing));
+    pausedTag.hidden = playing;
+  });
+  document.getElementById('btnRandom').addEventListener('click', function () { enqueue(null); });
+  chipsEl.addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-cat]');
+    if (b) enqueue(b.getAttribute('data-cat'));
+  });
+  var speedEl = document.getElementById('speed'), speedVal = document.getElementById('speedVal');
+  speedEl.addEventListener('input', function () {
+    speedMul = parseFloat(speedEl.value);
+    speedVal.textContent = speedMul + '×';
+  });
+  document.getElementById('auto').addEventListener('change', function (e) { auto = e.target.checked; });
+  document.querySelectorAll('button[data-view]').forEach(function (b) {
+    b.addEventListener('click', function () { userMoved = true; setPreset(b.getAttribute('data-view'), false); });
+  });
+  document.getElementById('btnReset').addEventListener('click', resetCounts);
+
+  /* ---------- Estado inicial ---------- */
+  resetCounts();
+  [[-8.2, null], [-4.6, 'vidrio'], [-1.2, 'plastico'], [2.1, 'papel'], [5.5, 'rechazo']].forEach(function (s) {
+    var it = makeItem(s[1], s[0], BELT_Y, 'belt');
+    var n = 0;
+    while (n < STATIONS.length && STATIONS[n].x - GATE_OFF <= it.x) n++;
+    it.nextStation = n;
+    for (var j = 0; j < n; j++) it.path.push({ i: j, yes: false });
+    it.mesh.position.set(it.x, it.y, it.z);
+  });
+  /* El primero puede ser cualquier categoría; si ya pasó por un nodo, que no coincida */
+  items.forEach(function (it) {
+    if (it.nextStation > 0 && STATIONS.slice(0, it.nextStation).some(function (s) { return s.key === it.cat; })) {
+      var fix = pickSpec('rechazo'); /* sustituye por un rechazo para mantener el recorrido coherente */
+      scene.remove(it.mesh);
+      var g = new THREE.Group(); fix.build(g); g.rotation.y = it.mesh.rotation.y; scene.add(g);
+      it.mesh = g; it.spec = fix; it.cat = fix.cat;
+    }
+  });
+
+  var onBeltEl = document.getElementById('onBelt'), lastCount = -1;
+  var last = performance.now();
+  function frame(now) {
+    var dt = Math.min((now - last) / 1000, 0.05);
+    last = now;
+    var sim = playing ? dt * speedMul : 0;
+
+    if (sim > 0) {
+      beltTex.offset.x -= SPEED * sim / 0.7;
+      if (auto) { autoT += sim; if (autoT >= 2.6) { autoT = 0; enqueue(null); } }
+      trySpawn();
+      var list = items.slice();
+      for (var i = 0; i < list.length; i++) updateItem(list[i], sim);
+      updatePushers(sim);
+      updateGates(sim);
+    }
+    updateBins();
+
+    var k = 1 - Math.exp(-dt * 9);
+    cam.theta += (goal.theta - cam.theta) * k;
+    cam.phi += (goal.phi - cam.phi) * k;
+    cam.r += (goal.r - cam.r) * k;
+    camera.position.set(
+      TARGET.x + cam.r * Math.sin(cam.phi) * Math.sin(cam.theta),
+      TARGET.y + cam.r * Math.cos(cam.phi),
+      TARGET.z + cam.r * Math.sin(cam.phi) * Math.cos(cam.theta)
+    );
+    camera.lookAt(TARGET);
+    renderer.render(scene, camera);
+
+    if (items.length !== lastCount) { lastCount = items.length; onBeltEl.textContent = items.length; }
+    requestAnimationFrame(frame);
+  }
+  resize();
+  requestAnimationFrame(frame);
+})();
+</script>
